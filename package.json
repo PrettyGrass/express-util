@@ -19,8 +19,8 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "express-util",
-    "appId": "org.simulatedgreg.electron-vue",
+    "productName": "LLExpress",
+    "appId": "ylin.express-util.client",
     "directories": {
       "output": "build"
     },

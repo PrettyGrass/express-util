@@ -22,9 +22,8 @@ function createWindow() {
     useContentSize: true,
     width: 1280
   })
-
+  global.__root = __dirname
   mainWindow.loadURL(winURL)
-
   mainWindow.on('closed', () => {
     mainWindow = null
   })

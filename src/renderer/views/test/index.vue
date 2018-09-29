@@ -67,8 +67,7 @@ export default {
     onSubmit() {
       this.$message('submit!')
       const ipcRenderer = this.$electron.ipcRenderer
-      console.log('ipcRenderer', ipcRenderer)
-      ipcRenderer.send('open-error-dialog')
+      this.form.desc = ipcRenderer.sendSync('synchronous-message', 'ping')
     },
     onCancel() {
       this.$message({

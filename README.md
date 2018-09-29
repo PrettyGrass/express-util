@@ -1,8 +1,10 @@
 # express-util
 
-> express-util
+> An electron-vue project
 
-#### Build Setup
+开发工具包
+
+## Build Setup
 
 ``` bash
 # install dependencies
@@ -11,18 +13,18 @@ npm install
 # serve with hot reload at localhost:9080
 npm run dev
 
-# build electron application for production
+# build electron app for production
 npm run build
 
-# run unit & end-to-end tests
-npm test
-
-
-# lint all JS/Vue component files in `src/`
+# lint all JS/Vue component files in `app/src`
 npm run lint
 
+# run webpack in production
+npm run pack
 ```
-
 ---
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+
+## 本项目改自:
+
+https://github.com/PanJiaChen/electron-vue-admin

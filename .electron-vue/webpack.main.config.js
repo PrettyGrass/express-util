@@ -3,14 +3,27 @@
 process.env.BABEL_ENV = 'main'
 
 const path = require('path')
+const glob = require('glob')
 const { dependencies } = require('../package.json')
 const webpack = require('webpack')
 
 const BabiliWebpackPlugin = require('babili-webpack-plugin')
 
+
+const files = glob.sync(path.join(__dirname, '../src/main/**/*.js'))
+const filesPath = []
+files.forEach((file) => {
+
+  if (file.indexOf('/main/index.js') > 0 || file.indexOf('/main/index.dev.js') > 0) {
+    return
+  }
+  filesPath.push(file)
+})
+var mainList = [path.join(__dirname, '../src/main/index.js')].concat(filesPath)
+
 let mainConfig = {
   entry: {
-    main: path.join(__dirname, '../src/main/index.js')
+    main: mainList
   },
   externals: [
     ...Object.keys(dependencies || {})

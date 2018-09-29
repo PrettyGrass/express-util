@@ -1,3 +1,4 @@
 build/*.js
 src/renderer/assets/**
 dist/**
+*.*

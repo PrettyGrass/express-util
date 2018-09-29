@@ -12,11 +12,13 @@
       </el-form-item>
       <el-form-item label="Activity time">
         <el-col :span="11">
-          <el-date-picker type="date" placeholder="Pick a date" v-model="form.date1" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="Pick a date" v-model="form.date1"
+                          style="width: 100%;"></el-date-picker>
         </el-col>
         <el-col class="line" :span="2">-</el-col>
         <el-col :span="11">
-          <el-time-picker type="fixed-time" placeholder="Pick a time" v-model="form.date2" style="width: 100%;"></el-time-picker>
+          <el-time-picker type="fixed-time" placeholder="Pick a time" v-model="form.date2"
+                          style="width: 100%;"></el-time-picker>
         </el-col>
       </el-form-item>
       <el-form-item label="Instant delivery">
@@ -48,40 +50,46 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+  import { ipcRenderer } from 'electron'
+  export default {
+    data() {
+      return {
+        form: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        }
+      }
+    },
+    created() {
+      console.log('注册接收', ipcRenderer)
+      ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        this.form.desc = arg
+      })
+    },
+    methods: {
+      onSubmit() {
+        this.$message('submit!')
+        ipcRenderer.send('asynchronous-message', 'ping')
+      },
+      onCancel() {
+        this.$message({
+          message: 'cancel!',
+          type: 'warning'
+        })
       }
     }
-  },
-  methods: {
-    onSubmit() {
-      this.$message('submit!')
-      const ipcRenderer = this.$electron.ipcRenderer
-      this.form.desc = ipcRenderer.sendSync('synchronous-message', 'ping')
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
-    }
   }
-}
 </script>
 
 <style scoped>
-.line{
-  text-align: center;
-}
+  .line {
+    text-align: center;
+  }
 </style>
 

@@ -19,7 +19,7 @@ files.forEach((file) => {
   }
   filesPath.push(file)
 })
-const otherFiles = glob.sync(path.join(__dirname, '../src/main/assets/**/*.sh'))
+const otherFiles = glob.sync(path.join(__dirname, '../src/main/assets/**/*'))
 otherFiles.forEach((file) => {
   filesPath.push(file)
 })
@@ -55,7 +55,7 @@ let mainConfig = {
         use: 'node-loader'
       },
       {
-        test: /\.sh$/,
+        test: /assets\//,
         loader: 'file-loader',
         options: {
           name: '[folder]/[name].[ext]'

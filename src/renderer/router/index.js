@@ -125,27 +125,15 @@ export const constantRouterMap = [
   {
     path: '/setting',
     component: Layout,
-    redirect: '/setting/table',
-    name: '设置',
-    meta: {title: '设置', icon: 'xcode'},
+    redirect: '/setting/app',
+    name: '配置',
+    meta: {title: '配置', icon: 'xcode'},
     children: [
       {
-        path: 'table',
-        name: '新建项目',
-        component: () => import('@/views/table/index'),
-        meta: {title: '新建项目', icon: 'create_new_folder'}
-      },
-      {
-        path: 'form',
-        name: '新建模块',
-        component: () => import('@/views/tree/index'),
-        meta: {title: '新建模块', icon: 'create_new_folder'}
-      },
-      {
-        path: 'rename',
-        name: '重命名',
-        component: () => import('@/views/tree/index'),
-        meta: {title: '重命名', icon: 'create_new_folder'}
+        path: 'app',
+        name: '配置管理',
+        component: () => import('@/views/config/index'),
+        meta: {title: '配置管理', icon: 'create_new_folder'}
       }
     ]
   },

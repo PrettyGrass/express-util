@@ -1,6 +1,22 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="form" label-width="120px">
+      <el-form-item label="配置名">
+        <el-col :span="5">
+          <el-select v-model="form.region" placeholder="please select your zone">
+            <el-option label="Zone one" value="shanghai"></el-option>
+            <el-option label="Zone two" value="beijing"></el-option>
+          </el-select>
+
+        </el-col>
+        <el-col :span="2" style="text-align: center">配置</el-col>
+        <el-col :span="5">
+          <el-input v-model="form.name"></el-input>
+        </el-col>
+        <el-button style="margin-left: 12px" type="primary" @click="onSubmit">重命名</el-button>
+        <el-button style="margin-left: 12px" type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="danger" @click="onCancel">删除</el-button>
+      </el-form-item>
       <el-form-item label="Activity name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
@@ -85,6 +101,7 @@
   export default {
     data() {
       return {
+        configs: [],
         fileList: [],
         form: {
           name: '',
@@ -107,7 +124,7 @@
       onSubmit() {
         this.$message('submit!')
         // ipcRenderer.send('asynchronous-message', 'ping')
-        this.form.desc = ipcRenderer.sendSync('app.path', 'userData')
+        this.form.desc = ipcRenderer.sendSync('app.user.config.get', 'userData')
 
       },
       onCancel() {

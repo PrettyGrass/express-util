@@ -3,24 +3,31 @@
     <el-form ref="form" :model="form" label-width="120px">
       <el-form-item label="配置名">
         <el-col :span="5">
-          <el-select v-model="form.region" placeholder="please select your zone">
-            <el-option label="Zone one" value="shanghai"></el-option>
-            <el-option label="Zone two" value="beijing"></el-option>
+          <el-select v-model="currentConfId" @change="configChange(this)" placeholder="请选择配置">
+            <el-option
+                    v-for="conf in confs"
+                    :key="conf.id"
+                    :label="conf.name"
+                    :value="conf.id">
+            </el-option>
+
           </el-select>
 
         </el-col>
         <el-col :span="2" style="text-align: center">配置</el-col>
-        <el-col :span="5">
-          <el-input v-model="form.name"></el-input>
+        <el-col :span="5" style="margin-right: 12px">
+          <el-input v-model="newName" placeholder="输入配置名称"></el-input>
         </el-col>
-        <el-button style="margin-left: 12px" type="primary" @click="onSubmit">重命名</el-button>
-        <el-button style="margin-left: 12px" type="primary" @click="onSubmit">创建</el-button>
-        <el-button type="danger" @click="onCancel">删除</el-button>
+        <el-button v-if="currentConf.id !== 'add'" type="primary" @click="updateAction">更新</el-button>
+        <el-button v-if="currentConf.id === 'add'" type="primary" :disabled="newName === ''" @click="addAction">创建</el-button>
+        <el-button v-if="currentConf.id !== 'add'" type="danger" @click="delAction">删除</el-button>
       </el-form-item>
-      <el-form-item label="Activity name">
+
+
+      <el-form-item label="七牛 Appkey">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
-      <el-form-item label="Activity zone">
+      <el-form-item label="七牛 Appkey">
         <el-select v-model="form.region" placeholder="please select your zone">
           <el-option label="Zone one" value="shanghai"></el-option>
           <el-option label="Zone two" value="beijing"></el-option>
@@ -57,51 +64,21 @@
       <el-form-item label="Activity form">
         <el-input type="textarea" v-model="form.desc"></el-input>
       </el-form-item>
-
-      <el-form-item>
-        <el-upload
-                class="upload-demo"
-                ref="upload"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-preview="handlePreview"
-                :on-remove="handleRemove"
-                :file-list="fileList"
-                :auto-upload="false">
-          <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-          <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-        </el-upload>
-      </el-form-item>
-
-      <el-form-item>
-        <el-upload
-                :auto-upload="false"
-                class="upload-demo"
-                drag
-                action="https://jsonplaceholder.typicode.com/posts/"
-                multiple>
-          <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-          <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
-        </el-upload>
-      </el-form-item>
-
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
-      </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
   import {ipcRenderer} from 'electron'
-  import * as qiniu from 'qiniu-js'
 
   export default {
     data() {
       return {
-        configs: [],
+        config: {},
+        confs: {},
+        currentConfId: 'add',
+        newName: '',
+        currentConf: {},
         fileList: [],
         form: {
           name: '',
@@ -116,31 +93,42 @@
       }
     },
     created() {
-      ipcRenderer.on('asynchronous-reply', (event, arg) => {
-        this.form.desc = arg
+      ipcRenderer.on('app.user.config.update', (event, arg) => {
+        this.getAction(arg)
       })
+      ipcRenderer.send('app.user.config.get')
     },
     methods: {
-      onSubmit() {
-        this.$message('submit!')
-        // ipcRenderer.send('asynchronous-message', 'ping')
-        this.form.desc = ipcRenderer.sendSync('app.user.config.get', 'userData')
 
+      addAction() {
+        if (!this.newName) {
+          return
+        }
+        this.currentConf.name = this.newName
+        ipcRenderer.send('app.user.config.add', this.currentConf)
       },
-      onCancel() {
-        this.$message({
-          message: 'cancel!',
-          type: 'warning'
-        })
+      getAction(config) {
+        this.config = config
+        this.confs = this.config.confs
+        this.confs.add = {
+          id: 'add',
+          name: '<添加新配置>'
+        }
+        this.currentConfId = this.config.currentConfId || 'add'
+        this.currentConf = this.confs[this.config.currentConfId] || {}
+        this.form.desc = JSON.stringify(this.config)
       },
-      submitUpload() {
-        console.log('上传', qiniu, this.$refs.upload, this.fileList);
+      delAction() {
+        ipcRenderer.send('app.user.config.del', this.currentConf)
       },
-      handleRemove(file, fileList) {
-        console.log(file, fileList);
+      updateAction() {
+        if (this.newName.length) {
+          this.currentConf.name = this.newName
+        }
+        ipcRenderer.send('app.user.config.update', this.currentConf)
       },
-      handlePreview(file) {
-        console.log(file);
+      configChange() {
+        this.currentConf = this.confs[this.currentConfId]
       }
     }
   }

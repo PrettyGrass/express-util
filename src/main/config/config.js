@@ -13,14 +13,6 @@ const Config = {
       return
     }
     this._configPath = path.join(app.getPath('userData'), 'app.config.json')
-    // console.log('fs.readSync(this._configPath)', fs.readSync(this._configPath))
-    // this._config = JSON.parse(fs.readSync(this._configPath))
-    if (!this._config) {
-      this._config = {
-        confs: {},
-        currentConf: ''
-      }
-    }
 
     ipcMain.on('asynchronous-message', (event, arg) => {
       event.sender.send('asynchronous-reply', 'pong')
@@ -41,44 +33,72 @@ const Config = {
     })
 
     ipcMain.on('app.user.config.get', (event, arg) => {
-      event.returnValue = this.getConfigs()
+      var c = this.getConfigs(event)
+      c.confPath = this._configPath
+      event.sender.send('app.user.config.update', c)
     })
     ipcMain.on('app.user.config.add', (event, arg) => {
-      event.returnValue = this.addConfig(arg)
+      event.returnValue = this.addConfig(event, arg)
     })
     ipcMain.on('app.user.config.del', (event, arg) => {
-      event.returnValue = this.delConfigs(arg)
+      event.returnValue = this.delConfigs(event, arg)
     })
     ipcMain.on('app.user.config.update', (event, arg) => {
-      event.returnValue = this.updateConfigs(arg)
+      event.returnValue = this.updateConfigs(event, arg)
     })
   },
 
-  getConfigs: function () {
-    return this._config.confs
-  },
-  addConfig: function (config) {
-    var ID = UUID.v1()
-    config.id = ID
-    this._config.confs[config.id] = config
-    this.saveConfigs()
-  },
-  delConfigs: function (id) {
-    delete this._config.confs[id]
-    this.saveConfigs()
-  },
-  updateConfigs: function (conf) {
-    var old = this._config.confs[id]
-    for (let key in conf) {
-      old[key] = conf[key]
+  getConfigs: function (event) {
+    var content = null
+    if (fs.existsSync(this._configPath)) {
+      content = fs.readFileSync(this._configPath)
     }
-    this.saveConfigs()
+    if (content) {
+      this._config = JSON.parse(content)
+    } else {
+      this._config = {
+        confs: {},
+        currentConf: ''
+      }
+      this.saveConfigs()
+    }
+    return this._config
   },
-  saveConfigs: function () {
-    return [{name: '配置'}]
+  addConfig: function (event, config) {
+    if (config) {
+      config.id = UUID.v1()
+      this._config.confs[config.id] = config
+      this._config.currentConfId = config.id
+    }
+    this.saveConfigs(event)
+  },
+  delConfigs: function (event, config) {
+    if (config) {
+      delete this._config.confs[config.id]
+    }
+    this._config.currentConfId = 'add'
+    this.saveConfigs(event)
+  },
+  updateConfigs: function (event, config) {
+    if (config) {
+      var old = this._config.confs[config.id]
+      for (let key in config) {
+        old[key] = config[key]
+      }
+      this._config.currentConfId = config.id
+    }
+    this.saveConfigs(event)
+
+  },
+  saveConfigs: function (event) {
+    var json = JSON.stringify(this._config)
+    fs.writeFileSync(this._configPath, json)
+    if (event) {
+      event.sender.send('app.user.config.update', this._config)
+    }
+    return ''
   }
 }
 
 
 Config.init()
-module.exports = Config

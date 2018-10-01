@@ -32,6 +32,9 @@
       <el-form-item label="七牛 SecretKey">
         <el-input type="text" v-model="currentConf.qiniuSecretKey"></el-input>
       </el-form-item>
+      <el-form-item label="七牛 Domain">
+        <el-input type="text" v-model="currentConf.qiniuBucketDomain"></el-input>
+      </el-form-item>
       <el-form-item label="七牛 bucket">
         <el-input type="text" v-model="currentConf.qiniuBucket"></el-input>
       </el-form-item>

@@ -58,7 +58,8 @@ const Config = {
     } else {
       this._config = {
         confs: {},
-        currentConf: ''
+        gits: [],
+        currentConf: 'add'
       }
       this.saveConfigs()
     }

@@ -133,7 +133,7 @@ export const constantRouterMap = [
         path: 'app',
         name: '配置管理',
         component: () => import('@/views/config/index'),
-        meta: {title: '配置管理', icon: 'create_new_folder'}
+        meta: {title: '配置管理', icon: 'setting'}
       }
     ]
   },

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
+    <el-form ref="form" :model="currentConf" label-width="120px">
       <el-form-item label="配置名">
         <el-col :span="5">
           <el-select v-model="currentConfId" @change="configChange(this)" placeholder="请选择配置">
@@ -19,50 +19,80 @@
           <el-input v-model="newName" placeholder="输入配置名称"></el-input>
         </el-col>
         <el-button v-if="currentConf.id !== 'add'" type="primary" @click="updateAction">更新</el-button>
-        <el-button v-if="currentConf.id === 'add'" type="primary" :disabled="newName === ''" @click="addAction">创建</el-button>
+        <el-button v-if="currentConf.id === 'add'" type="primary" :disabled="newName === ''" @click="addAction">创建
+        </el-button>
         <el-button v-if="currentConf.id !== 'add'" type="danger" @click="delAction">删除</el-button>
       </el-form-item>
 
+      <el-form-item label="配置地址">
+        {{config.confPath}}
+      </el-form-item>
 
-      <el-form-item label="七牛 Appkey">
-        <el-input v-model="form.name"></el-input>
-      </el-form-item>
-      <el-form-item label="七牛 Appkey">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai"></el-option>
-          <el-option label="Zone two" value="beijing"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker type="date" placeholder="Pick a date" v-model="form.date1"
-                          style="width: 100%;"></el-date-picker>
+      <el-form-item label="七牛 AccessKey">
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.qiniuAccessKey"></el-input>
         </el-col>
-        <el-col class="line" :span="2">-</el-col>
-        <el-col :span="11">
-          <el-time-picker type="fixed-time" placeholder="Pick a time" v-model="form.date2"
-                          style="width: 100%;"></el-time-picker>
+        <el-col class="line" :span="3">七牛 SecretKey</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.qiniuSecretKey"></el-input>
+        </el-col>
+        <el-col class="line" :span="3">七牛 bucket</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.qiniuBucket"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery"></el-switch>
+
+
+      <el-form-item label="OSS AccessKey">
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossAccessKey"></el-input>
+        </el-col>
+        <el-col class="line" :span="3">OSS SecretKey</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossSecretKey"></el-input>
+        </el-col>
+        <el-col class="line" :span="3">OSS bucket</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossBucket"></el-input>
+        </el-col>
+
       </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type"></el-checkbox>
-          <el-checkbox label="Promotion activities" name="type"></el-checkbox>
-          <el-checkbox label="Offline activities" name="type"></el-checkbox>
-          <el-checkbox label="Simple brand exposure" name="type"></el-checkbox>
-        </el-checkbox-group>
+
+      <el-form-item label="OSS RoleArn">
+
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossRoleArn"></el-input>
+        </el-col>
+        <el-col class="line" :span="3">OSS policy</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossPolicy"></el-input>
+        </el-col>
+        <el-col class="line" :span="3">OSS region</el-col>
+        <el-col :span="4">
+          <el-input type="text" v-model="currentConf.aliossRegion"></el-input>
+        </el-col>
       </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor"></el-radio>
-          <el-radio label="Venue"></el-radio>
-        </el-radio-group>
+
+      <el-form-item label="GIT内容仓库" v-for="git in gits">
+        <el-col :span="5">
+          <el-input v-model="git.url" placeholder="GIT内容仓库地址"></el-input>
+        </el-col>
+        <el-col :span="2" style="text-align: center">分支</el-col>
+        <el-col :span="5" style="margin-right: 12px">
+          <el-input v-model="git.branch" placeholder="输入分支"></el-input>
+        </el-col>
+        <el-button type="danger" @click="delGitAction(git)">删除</el-button>
       </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input type="textarea" v-model="form.desc"></el-input>
+
+      <el-form-item label="添加GIT内容仓库">
+        <el-col :span="5">
+          <el-input v-model="newGit.url" placeholder="GIT内容仓库地址"></el-input>
+        </el-col>
+        <el-col :span="2" style="text-align: center">分支</el-col>
+        <el-col :span="5" style="margin-right: 12px">
+          <el-input v-model="newGit.branch" placeholder="输入分支"></el-input>
+        </el-col>
+        <el-button type="primary" :disabled="newGit.url === ''" @click="addGitAction(newGit)">创建</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -76,20 +106,11 @@
       return {
         config: {},
         confs: {},
+        gits: [],
+        newGit: {branch: 'msater'},
         currentConfId: 'add',
         newName: '',
         currentConf: {},
-        fileList: [],
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        }
       }
     },
     created() {
@@ -112,11 +133,10 @@
         this.confs = this.config.confs
         this.confs.add = {
           id: 'add',
-          name: '<添加新配置>'
+          name: '<增加新配置>'
         }
         this.currentConfId = this.config.currentConfId || 'add'
-        this.currentConf = this.confs[this.config.currentConfId] || {}
-        this.form.desc = JSON.stringify(this.config)
+        this.configChange()
       },
       delAction() {
         ipcRenderer.send('app.user.config.del', this.currentConf)
@@ -127,8 +147,25 @@
         }
         ipcRenderer.send('app.user.config.update', this.currentConf)
       },
+
+      addGitAction(git) {
+        var newGit = {}
+        for (let key in git) {
+          newGit[key] = git[key]
+        }
+        this.newGit = {branch: 'master'}
+        this.gits.push(newGit)
+      },
+      delGitAction(git) {
+        this.gits.splice(this.gits.indexOf(git), 1)
+      },
       configChange() {
         this.currentConf = this.confs[this.currentConfId]
+        this.newName = ''
+        if (!this.currentConf.gits) {
+          this.currentConf.gits = []
+        }
+        this.gits = this.currentConf.gits
       }
     }
   }

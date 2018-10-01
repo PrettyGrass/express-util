@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="currentConf" label-width="120px">
-      <el-form-item label="配置名">
+      <el-form-item label="配置">
         <el-col :span="5">
           <el-select v-model="currentConfId" @change="configChange(this)" placeholder="请选择配置">
             <el-option
@@ -14,7 +14,7 @@
           </el-select>
 
         </el-col>
-        <el-col :span="2" style="text-align: center">配置</el-col>
+        <el-col :span="2" style="text-align: center">新名称</el-col>
         <el-col :span="5" style="margin-right: 12px">
           <el-input v-model="newName" placeholder="输入配置名称"></el-input>
         </el-col>
@@ -24,55 +24,35 @@
         <el-button v-if="currentConf.id !== 'add'" type="danger" @click="delAction">删除</el-button>
       </el-form-item>
 
-      <el-form-item label="配置地址">
-        {{config.confPath}}
-      </el-form-item>
+      <el-form-item label="配置文件地址">{{config.confPath}}</el-form-item>
 
       <el-form-item label="七牛 AccessKey">
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.qiniuAccessKey"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">七牛 SecretKey</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.qiniuSecretKey"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">七牛 bucket</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.qiniuBucket"></el-input>
-        </el-col>
+        <el-input type="text" v-model="currentConf.qiniuAccessKey"></el-input>
       </el-form-item>
-
-
+      <el-form-item label="七牛 SecretKey">
+        <el-input type="text" v-model="currentConf.qiniuSecretKey"></el-input>
+      </el-form-item>
+      <el-form-item label="七牛 bucket">
+        <el-input type="text" v-model="currentConf.qiniuBucket"></el-input>
+      </el-form-item>
       <el-form-item label="OSS AccessKey">
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossAccessKey"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">OSS SecretKey</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossSecretKey"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">OSS bucket</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossBucket"></el-input>
-        </el-col>
-
+        <el-input type="text" v-model="currentConf.aliossAccessKey"></el-input>
       </el-form-item>
-
+      <el-form-item label="OSS SecretKey">
+        <el-input type="text" v-model="currentConf.aliossSecretKey"></el-input>
+      </el-form-item>
+      <el-form-item label="OSS bucket">
+        <el-input type="text" v-model="currentConf.aliossBucket"></el-input>
+      </el-form-item>
       <el-form-item label="OSS RoleArn">
-
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossRoleArn"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">OSS policy</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossPolicy"></el-input>
-        </el-col>
-        <el-col class="line" :span="3">OSS region</el-col>
-        <el-col :span="4">
-          <el-input type="text" v-model="currentConf.aliossRegion"></el-input>
-        </el-col>
+        <el-input type="text" v-model="currentConf.aliossRoleArn"></el-input>
       </el-form-item>
-
+      <el-form-item label="OSS Policy">
+        <el-input type="text" v-model="currentConf.aliossPolicy"></el-input>
+      </el-form-item>
+      <el-form-item label="OSS Region">
+        <el-input type="text" v-model="currentConf.aliossRegion"></el-input>
+      </el-form-item>
       <el-form-item label="GIT内容仓库" v-for="git in gits">
         <el-col :span="5">
           <el-input v-model="git.url" placeholder="GIT内容仓库地址"></el-input>
@@ -83,7 +63,6 @@
         </el-col>
         <el-button type="danger" @click="delGitAction(git)">删除</el-button>
       </el-form-item>
-
       <el-form-item label="添加GIT内容仓库">
         <el-col :span="5">
           <el-input v-model="newGit.url" placeholder="GIT内容仓库地址"></el-input>
@@ -139,7 +118,14 @@
         this.configChange()
       },
       delAction() {
-        ipcRenderer.send('app.user.config.del', this.currentConf)
+        this.$confirm('删除配置后无法恢复, 是否继续?', '警告', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          ipcRenderer.send('app.user.config.del', this.currentConf)
+        }).catch(() => {
+        });
       },
       updateAction() {
         if (this.newName.length) {

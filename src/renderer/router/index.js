@@ -105,7 +105,7 @@ export const constantRouterMap = [
       {
         path: 'open',
         name: '开源组件',
-        component: () => import('@/views/table/index'),
+        component: () => import('@/views/component/open/index'),
         meta: {title: '开源组件', icon: 'create_new_folder'}
       },
       {

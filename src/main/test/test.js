@@ -1,6 +1,7 @@
 // 在主进程中.
 const {ipcMain} = require('electron')
 const path = require('path')
+const config = require('../config/config').default
 
 ipcMain.on('asynchronous-message', (event, arg) => {
   event.sender.send('asynchronous-reply', 'pong')
@@ -16,6 +17,7 @@ ipcMain.on('asynchronous-message', (event, arg) => {
   });
 })
 
-ipcMain.on('synchronous-message', (event, arg) => {
+ipcMain.on('test', (event, arg) => {
+  console.log('configconfig', config.getConfigs())
   event.returnValue = 'pong'
 })

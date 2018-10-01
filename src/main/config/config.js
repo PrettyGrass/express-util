@@ -14,20 +14,6 @@ const Config = {
     }
     this._configPath = path.join(app.getPath('userData'), 'app.config.json')
 
-    ipcMain.on('asynchronous-message', (event, arg) => {
-      event.sender.send('asynchronous-reply', 'pong')
-
-      var gitPath = path.join(global.__root, 'assets/gitSource.sh')
-      var exec = require('child_process').exec;
-      var cmdStr = 'sh ' + gitPath + ' --help';
-      exec(cmdStr, function (err, stdout, stderr) {
-        if (err) {
-        } else {
-          event.sender.send('asynchronous-reply', stdout)
-        }
-      });
-    })
-
     ipcMain.on('app.path', (event, arg) => {
       event.returnValue = app.getPath(arg)
     })
@@ -59,11 +45,18 @@ const Config = {
       this._config = {
         confs: {},
         gits: [],
-        currentConf: 'add'
+        currentConfId: 'add'
       }
       this.saveConfigs()
     }
     return this._config
+  },
+  getCurrentConfig: function () {
+    console.log('this', this)
+    this.getConfigs()
+    var currentConf = this._config.confs[this._config.currentConfId]
+    //console.log('currentConf', currentConf , this._config.currentConfId)
+    return currentConf
   },
   addConfig: function (event, config) {
     if (config) {
@@ -101,5 +94,5 @@ const Config = {
   }
 }
 
-
 Config.init()
+export default Config

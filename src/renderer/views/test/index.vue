@@ -106,8 +106,8 @@
     methods: {
       onSubmit() {
         this.$message('submit!')
-        // ipcRenderer.send('asynchronous-message', 'ping')
-        this.form.desc = ipcRenderer.sendSync('app.path', 'userData')
+        ipcRenderer.send('test', 'ping')
+        //this.form.desc = ipcRenderer.sendSync('app.path', 'userData')
 
       },
       onCancel() {

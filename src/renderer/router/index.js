@@ -111,14 +111,22 @@ export const constantRouterMap = [
       {
         path: 'close',
         name: '闭源组件',
-        component: () => import('@/views/tree/index'),
+        component: () => import('@/views/component/open/index'),
         meta: {title: '闭源组件', icon: 'create_new_folder'}
       },
       {
-        path: 'rename',
+        path: 'inner',
         name: '自研组件',
         component: () => import('@/views/tree/index'),
         meta: {title: '自研组件', icon: 'create_new_folder'}
+      }
+      ,
+      {
+        path: 'create/:type',
+        name: '添加组件',
+        hidden: true,
+        component: () => import('@/views/component/create/index'),
+        meta: {title: '添加组件', icon: 'create_new_folder'}
       }
     ]
   },

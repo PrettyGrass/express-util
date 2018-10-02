@@ -26,6 +26,31 @@
 
       <el-form-item label="配置文件地址">{{config.confPath}}</el-form-item>
 
+      <el-form-item label="文件服务器">
+        <el-select v-model="currentConf.fileCloud" placeholder="请选择文件服务器">
+          <el-option
+                  v-for="conf in fileClouds"
+                  :key="conf.type"
+                  :label="conf.name"
+                  :value="conf.type">
+          </el-option>
+
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="开源组件目录">
+        <el-input type="text" v-model="currentConf.openSourceDir"></el-input>
+      </el-form-item>
+      <el-form-item label="定制组件目录">
+        <el-input type="text" v-model="currentConf.openSourceCustomDir"></el-input>
+      </el-form-item>
+      <el-form-item label="闭源组件目录">
+        <el-input type="text" v-model="currentConf.closeSourceDir"></el-input>
+      </el-form-item>
+      <el-form-item label="自研组件目录">
+        <el-input type="text" v-model="currentConf.innerSourceDir"></el-input>
+      </el-form-item>
+
       <el-form-item label="七牛 AccessKey">
         <el-input type="text" v-model="currentConf.qiniuAccessKey"></el-input>
       </el-form-item>
@@ -58,11 +83,11 @@
       </el-form-item>
       <el-form-item label="GIT内容仓库" v-for="git in gits">
         <el-col :span="5">
-          <el-input v-model="git.url" placeholder="GIT内容仓库地址"></el-input>
+          <el-input disabled v-model="git.url" placeholder="GIT内容仓库地址"></el-input>
         </el-col>
         <el-col :span="2" style="text-align: center">分支</el-col>
         <el-col :span="5" style="margin-right: 12px">
-          <el-input v-model="git.branch" placeholder="输入分支"></el-input>
+          <el-input disabled v-model="git.branch" placeholder="输入分支"></el-input>
         </el-col>
         <el-button type="danger" @click="delGitAction(git)">删除</el-button>
       </el-form-item>
@@ -89,10 +114,11 @@
         config: {},
         confs: {},
         gits: [],
-        newGit: {branch: 'msater'},
+        newGit: {branch: 'msater', url: ''},
         currentConfId: 'add',
         newName: '',
         currentConf: {},
+        fileClouds: [{name: '七牛', type: 'qiniu'}, {name: '阿里OSS', type: 'oss'}]
       }
     },
     created() {
@@ -142,7 +168,7 @@
         for (let key in git) {
           newGit[key] = git[key]
         }
-        this.newGit = {branch: 'master'}
+        this.newGit = {branch: 'master', url: ''}
         this.gits.push(newGit)
       },
       delGitAction(git) {

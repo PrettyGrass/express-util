@@ -14,6 +14,8 @@ const Config = {
     }
     this._configPath = path.join(app.getPath('userData'), 'app.config.json')
 
+    this.initConfigs()
+
     ipcMain.on('app.path', (event, arg) => {
       event.returnValue = app.getPath(arg)
     })
@@ -21,6 +23,7 @@ const Config = {
     ipcMain.on('app.user.config.get', (event, arg) => {
       var c = this.getConfigs(event)
       c.confPath = this._configPath
+      event.returnValue = c
       event.sender.send('app.user.config.update', c)
     })
     ipcMain.on('app.user.config.add', (event, arg) => {
@@ -32,9 +35,11 @@ const Config = {
     ipcMain.on('app.user.config.update', (event, arg) => {
       event.returnValue = this.updateConfigs(event, arg)
     })
+    ipcMain.on('app.user.config.current', (event, arg) => {
+      event.returnValue = this.getCurrentConfig()
+    })
   },
-
-  getConfigs: function (event) {
+  initConfigs: function (event) {
     var content = null
     if (fs.existsSync(this._configPath)) {
       content = fs.readFileSync(this._configPath)
@@ -49,13 +54,12 @@ const Config = {
       }
       this.saveConfigs()
     }
+  },
+  getConfigs: function (event) {
     return this._config
   },
   getCurrentConfig: function () {
-    console.log('this', this)
-    this.getConfigs()
     var currentConf = this._config.confs[this._config.currentConfId]
-    //console.log('currentConf', currentConf , this._config.currentConfId)
     return currentConf
   },
   addConfig: function (event, config) {

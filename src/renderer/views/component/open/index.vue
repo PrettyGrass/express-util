@@ -2,21 +2,16 @@
   <div class="app-container">
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
-        <!--<el-dropdown>-->
-        <!--<i class="el-icon-setting" style="margin-right: 15px"></i>-->
-        <!--<el-dropdown-menu slot="dropdown">-->
-        <!--<el-dropdown-item>查看</el-dropdown-item>-->
-        <!--<el-dropdown-item>新增</el-dropdown-item>-->
-        <!--<el-dropdown-item>删除</el-dropdown-item>-->
-        <!--</el-dropdown-menu>-->
-        <!--</el-dropdown>-->
-        <!--<span>王小虎</span>-->
-        <el-button>刷新</el-button>
-        <el-button>新增组件</el-button>
+        <el-input placeholder="搜索" v-model="searchText" style="width: 200px"></el-input>
+        <el-button @click="fetchData">刷新</el-button>
+
+        <router-link class="inlineBlock" to="/component/create/open">
+          <el-button>添加组件</el-button>
+        </router-link>
       </el-header>
 
       <el-main>
-        <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit
+        <el-table :data="listShow" v-loading.body="listLoading" element-loading-text="Loading" border fit
                   highlight-current-row>
           <el-table-column align="center" label='序号' width="95">
             <template slot-scope="scope">
@@ -36,8 +31,10 @@
           <el-table-column align="center" prop="created_at" label="操作">
             <template slot-scope="scope">
               <el-button>复制依赖</el-button>
+
               <!--<i class="el-icon-time"></i>-->
               <!--<span>{{scope.row.url}}</span>-->
+              <el-button @click="addVersion(scope.row.podName)">添加新版本</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -54,9 +51,23 @@
   export default {
     data() {
       return {
-        list: null,
+        listFull: null,
+        listShow: null,
         listLoading: true,
-        sid: ''
+        sid: '',
+        searchText: '',
+        type: '',
+        libDir: ''
+      }
+    },
+    watch: {
+      searchText(val) {
+        this.searchAction()
+      },
+      '$route'(to, from) {
+        this.sid = ''
+        this.searchText = ''
+        this.fetchData()
       }
     },
     filters: {
@@ -89,7 +100,8 @@
           let ver = component.name.replace('.podspec', '')
           this.appendPod(items, component, ver)
         })
-        this.list = items
+        this.listFull = items
+        this.searchAction()
       },
       /// 同一组件多版本情况
       appendPod(components, component, ver) {
@@ -107,17 +119,39 @@
         }
       },
       fetchData() {
+        this.type = this.$route.path.split('/').pop()
+        var current = ipcRenderer.sendSync('app.user.config.current', {sync: true})
+        switch (this.type) {
+          case 'open':
+            this.libDir = current.openSourceDir
+            break
+          case 'close':
+            this.libDir = current.closeSourceDir
+            break
+        }
         this.listLoading = true
 
         ipcRenderer.send('app.qiniu.file.list', {
           sid: this.sid,
-          dir: 'ios-close-lib/',
+          dir: this.libDir,
           size: 500
         })
-        // getList(this.listQuery).then(response => {
-        //   this.list = response.data.items
-        //   this.listLoading = false
-        // })
+      },
+      searchAction() {
+        var items = []
+        if (this.searchText.length > 0) {
+          for (let index in this.listFull) {
+            let item = this.listFull[index]
+            if (item.podName.toLowerCase().indexOf(this.searchText.toLowerCase()) >= 0)
+              items.push(item)
+          }
+        } else {
+          items = this.listFull
+        }
+        this.listShow = items
+      },
+      addVersion(name) {
+        this.$router.push('/component/create/open?podName=' + name)
       }
     }
   }

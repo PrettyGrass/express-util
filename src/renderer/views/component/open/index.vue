@@ -13,25 +13,25 @@
       <el-main>
         <el-table :data="listShow" v-loading.body="listLoading" element-loading-text="Loading" border fit
                   highlight-current-row>
-          <el-table-column align="center" label='序号' width="95">
+          <el-table-column align="center" label='序号' width="60">
             <template slot-scope="scope">
               {{scope.$index}}
             </template>
           </el-table-column>
-          <el-table-column label="组件名" align="center">
+          <el-table-column label="组件名" align="center" width="160">
             <template slot-scope="scope">
               <span>{{scope.row.podName}}</span>
             </template>
           </el-table-column>
-          <el-table-column class-name="status-col" label="版本" align="center">
+          <el-table-column class-name="status-col" label="版本" align="left">
             <template slot-scope="scope">
-              <el-tag :type="scope.row.vers | statusFilter">{{scope.row.vers}}</el-tag>
+              <el-button style="padding: 4px" v-for="ver in scope.row.vers" :type="ver | statusFilter"
+                         @click="selectedPodVer(scope.row.podName, ver)">{{ver}}
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column align="center" prop="created_at" label="操作">
             <template slot-scope="scope">
-              <el-button>复制依赖</el-button>
-
               <!--<i class="el-icon-time"></i>-->
               <!--<span>{{scope.row.url}}</span>-->
               <el-button @click="addVersion(scope.row.podName)">添加新版本</el-button>
@@ -46,7 +46,7 @@
 
 <script>
   // import {getList} from '@/api/table'
-  import {ipcRenderer} from 'electron'
+  import {clipboard, ipcRenderer} from 'electron'
 
   export default {
     data() {
@@ -151,7 +151,12 @@
         this.listShow = items
       },
       addVersion(name) {
-        this.$router.push('/component/create/open?podName=' + name)
+        this.$router.push('/component/create/' + this.type + '?podName=' + name)
+      },
+      selectedPodVer(name, ver) {
+        let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'`
+        clipboard.writeText(pod)
+        this.$message.info('依赖项已复制到剪切板!')
       }
     }
   }

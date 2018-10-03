@@ -73,7 +73,7 @@
           action: action,
           name: action,
           title: '保存Markdown文件',
-          extensions: ['md', 'txt']
+          extensions: ['md']
         })
 
       }

@@ -4,7 +4,7 @@
       <el-header style="text-align: right; font-size: 12px">
         <el-input placeholder="搜索" v-model="searchText" style="width: 200px" clearable></el-input>
         <el-button @click="fetchData">刷新</el-button>
-
+        <el-button @click="markDownAction">生成 Markdown</el-button>
         <router-link class="inlineBlock" to="/component/create/open">
           <el-button>添加组件</el-button>
         </router-link>
@@ -45,8 +45,8 @@
 </template>
 
 <script>
-  // import {getList} from '@/api/table'
-  import {clipboard, ipcRenderer} from 'electron'
+  import {clipboard, ipcRenderer, remote} from 'electron'
+  const path = require('path')
 
   export default {
     data() {
@@ -157,6 +157,15 @@
         let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'`
         clipboard.writeText(pod)
         this.$message.success('依赖项已复制到剪切板!')
+      },
+      markDownAction() {
+        const BrowserWindow = remote.BrowserWindow
+        const modalPath = path.join('file://', __dirname, '../../sections/windows/modal.html')
+        let win = new BrowserWindow({ width: 960, height: 540 })
+
+        win.on('close', () => { win = null })
+        win.loadURL(modalPath)
+        win.show()
       }
     }
   }

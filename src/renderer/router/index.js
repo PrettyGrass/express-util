@@ -76,19 +76,25 @@ export const constantRouterMap = [
         path: 'table',
         name: '新建项目',
         component: () => import('@/views/table/index'),
-        meta: {title: '新建项目', icon: 'create_new_folder'}
+        meta: {title: '新建项目', icon: 'app_project'}
       },
       {
         path: 'form',
         name: '新建模块',
         component: () => import('@/views/tree/index'),
-        meta: {title: '新建模块', icon: 'create_new_folder'}
+        meta: {title: '新建模块', icon: 'library'}
       },
       {
         path: 'rename',
-        name: '重命名',
+        name: '项目重命名',
         component: () => import('@/views/tree/index'),
-        meta: {title: '重命名', icon: 'create_new_folder'}
+        meta: {title: '项目重命名', icon: 'rename'}
+      },
+      {
+        path: 'template',
+        name: '项目模板',
+        component: () => import('@/views/tree/index'),
+        meta: {title: '项目模板', icon: 'template'}
       }
     ]
   },
@@ -100,27 +106,26 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/component/open',
     name: 'iOS组件',
-    meta: {title: 'iOS组件', icon: 'xcode'},
+    meta: {title: 'iOS组件', icon: 'component'},
     children: [
       {
         path: 'open',
         name: '开源组件',
         component: () => import('@/views/component/open/index'),
-        meta: {title: '开源组件', icon: 'create_new_folder'}
+        meta: {title: '开源组件', icon: 'opensource'}
       },
       {
         path: 'close',
         name: '闭源组件',
         component: () => import('@/views/component/open/index'),
-        meta: {title: '闭源组件', icon: 'create_new_folder'}
+        meta: {title: '闭源组件', icon: 'closesource'}
       },
       {
         path: 'inner',
         name: '自研组件',
         component: () => import('@/views/tree/index'),
-        meta: {title: '自研组件', icon: 'create_new_folder'}
-      }
-      ,
+        meta: {title: '自研组件', icon: 'develop'}
+      },
       {
         path: 'create/:type',
         name: '添加组件',
@@ -150,7 +155,7 @@ export const constantRouterMap = [
     component: Layout,
     redirect: '/test/table',
     name: '测试功能区',
-    meta: {title: '测试功能区', icon: 'example'},
+    meta: {title: '测试功能区', icon: 'test'},
     children: [
       {
         path: 'table',

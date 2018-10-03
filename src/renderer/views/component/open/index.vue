@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-container>
       <el-header style="text-align: right; font-size: 12px">
-        <el-input placeholder="搜索" v-model="searchText" style="width: 200px"></el-input>
+        <el-input placeholder="搜索" v-model="searchText" style="width: 200px" clearable></el-input>
         <el-button @click="fetchData">刷新</el-button>
 
         <router-link class="inlineBlock" to="/component/create/open">
@@ -18,7 +18,7 @@
               {{scope.$index}}
             </template>
           </el-table-column>
-          <el-table-column label="组件名" align="center" width="160">
+          <el-table-column label="组件名" align="center" width="200">
             <template slot-scope="scope">
               <span>{{scope.row.podName}}</span>
             </template>
@@ -30,11 +30,11 @@
               </el-button>
             </template>
           </el-table-column>
-          <el-table-column align="center" prop="created_at" label="操作">
+          <el-table-column align="center" prop="created_at" label="操作" width="120">
             <template slot-scope="scope">
               <!--<i class="el-icon-time"></i>-->
               <!--<span>{{scope.row.url}}</span>-->
-              <el-button @click="addVersion(scope.row.podName)">添加新版本</el-button>
+              <el-button style="padding: 4px" @click="addVersion(scope.row.podName)">添加新版本</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -156,7 +156,7 @@
       selectedPodVer(name, ver) {
         let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'`
         clipboard.writeText(pod)
-        this.$message.info('依赖项已复制到剪切板!')
+        this.$message.success('依赖项已复制到剪切板!')
       }
     }
   }

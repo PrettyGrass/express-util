@@ -3,11 +3,11 @@
     <el-form ref="form" :model="form" label-width="160px">
       <el-form-item label="组件名">
         <el-col :span="10">
-          <el-input :disabled="disablePodName" v-model="form.podName" placeholder="请输入组件名"></el-input>
+          <el-input :disabled="disablePodName" v-model="form.podName" placeholder="请输入组件名" clearable></el-input>
         </el-col>
-        <el-col class="line" :span="4">- 版本号</el-col>
+        <el-col class="line" :span="4">版本号</el-col>
         <el-col :span="10">
-          <el-input v-model="form.podVer" placeholder="请输入版本号"></el-input>
+          <el-input v-model="form.podVer" placeholder="请输入版本号" clearable></el-input>
         </el-col>
       </el-form-item>
 
@@ -120,7 +120,7 @@
               throw respErr;
             }
             if (respInfo.statusCode == 200) {
-              this.podZipFileUrl = `${bucketDomain}/${key}`.replace('//', '/')
+              this.podZipFileUrl = `${bucketDomain}/${key}`
             } else {
               console.log(respInfo.statusCode);
               console.log(respBody);

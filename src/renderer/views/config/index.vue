@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="currentConf" label-width="120px">
+    <el-form ref="form" :model="currentConf" label-width="160px">
       <el-form-item label="配置">
         <el-col :span="5">
           <el-select v-model="currentConfId" @change="configChange(this)" placeholder="请选择配置">
@@ -82,7 +82,7 @@
         <el-input type="text" v-model="currentConf.aliossRegion"></el-input>
       </el-form-item>
       <el-form-item label="GIT内容仓库" v-for="git in gits">
-        <el-col :span="5">
+        <el-col :span="10">
           <el-input disabled v-model="git.url" placeholder="GIT内容仓库地址"></el-input>
         </el-col>
         <el-col :span="2" style="text-align: center">分支</el-col>
@@ -92,7 +92,7 @@
         <el-button type="danger" @click="delGitAction(git)">删除</el-button>
       </el-form-item>
       <el-form-item label="添加GIT内容仓库">
-        <el-col :span="5">
+        <el-col :span="10">
           <el-input v-model="newGit.url" placeholder="GIT内容仓库地址"></el-input>
         </el-col>
         <el-col :span="2" style="text-align: center">分支</el-col>

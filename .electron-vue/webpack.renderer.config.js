@@ -3,7 +3,7 @@
 process.env.BABEL_ENV = 'renderer'
 
 const path = require('path')
-const { dependencies } = require('../package.json')
+const {dependencies} = require('../package.json')
 const webpack = require('webpack')
 const config = require('../config/index.js')
 
@@ -147,6 +147,16 @@ let rendererConfig = {
         ? path.resolve(__dirname, '../node_modules')
         : false
     }),
+    new CopyWebpackPlugin([{
+      from: 'node_modules/mavon-editor/dist/highlightjs',
+      to: path.resolve(__dirname, '../dist/electron/highlightjs'),
+    }, {
+      from: 'node_modules/mavon-editor/dist/markdown',
+      to: path.resolve(__dirname, '../dist/electron/markdown'),
+    }, {
+      from: 'node_modules/mavon-editor/dist/katex',
+      to: path.resolve(__dirname, '../dist/electron/katex')
+    }]),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ],

@@ -172,7 +172,7 @@
         ipcRenderer.on(listenback, () => {
           var allWebContents = remote.webContents.getAllWebContents();
           for (var t in allWebContents) {
-            allWebContents[t].webContents.send(listen, '第三方水电费第三方');
+            allWebContents[t].webContents.send(listen, this.makeMarkdown());
           }
         })
         win.on('close', () => {
@@ -180,6 +180,26 @@
         })
         win.loadURL(winURL)
         win.show()
+      },
+
+      makeMarkdown() {
+        var md = `# ${this.libDir} 组件 ` +
+          '\n!!#FF0000  !24 该文档自动生成, 一般情况不需要手动维护!!!\n' +
+          '\n' +
+          '---\n' +
+          '\n\n'
+
+        for (let i = 0; i < this.listFull.length; i++) {
+
+          let pod = this.listFull[i]
+          md = `${md} \n## ${pod.podName}\n`
+
+          for (let index in pod.vers) {
+            let ver = pod.vers[index]
+            md = `${md}- __${ver}__ &nbsp;&nbsp;&nbsp;&nbsp;\`\`\`pod '${pod.podName}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'\`\`\`\n\n`
+          }
+        }
+        return md
       }
     }
   }

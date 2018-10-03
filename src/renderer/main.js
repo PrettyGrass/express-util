@@ -9,6 +9,8 @@ import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 import App from './App'
 import router from './router'
 import store from './store'
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -16,6 +18,7 @@ import '@/permission' // permission control
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 
 Vue.use(ElementUI, { locale })
+Vue.use(mavonEditor)
 
 Vue.config.productionTip = false
 

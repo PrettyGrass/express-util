@@ -46,6 +46,7 @@
 
 <script>
   import {clipboard, ipcRenderer, remote} from 'electron'
+
   const path = require('path')
 
   export default {
@@ -159,12 +160,25 @@
         this.$message.success('依赖项已复制到剪切板!')
       },
       markDownAction() {
-        const BrowserWindow = remote.BrowserWindow
-        const modalPath = path.join('file://', __dirname, '../../sections/windows/modal.html')
-        let win = new BrowserWindow({ width: 960, height: 540 })
 
-        win.on('close', () => { win = null })
-        win.loadURL(modalPath)
+        var listen = 'listenlisten' + Date.now()
+        var listenback = listen + 'back'
+        const winURL = process.env.NODE_ENV === 'development'
+          ? `http://localhost:9080/markdown.html?listen=${listen}&listenback=${listenback}`
+          : `file://${__dirname}/markdown.html?listen=${listen}&listenback=${listenback}`
+
+        const BrowserWindow = remote.BrowserWindow
+        let win = new BrowserWindow({width: 960, height: 540})
+        ipcRenderer.on(listenback, () => {
+          var allWebContents = remote.webContents.getAllWebContents();
+          for (var t in allWebContents) {
+            allWebContents[t].webContents.send(listen, '第三方水电费第三方');
+          }
+        })
+        win.on('close', () => {
+          win = null
+        })
+        win.loadURL(winURL)
         win.show()
       }
     }

@@ -192,6 +192,12 @@ export const constantRouterMap = [
         name: '表单',
         component: () => import('@/views/form/index'),
         meta: {title: '表单', icon: 'form'}
+      },
+      {
+        path: 'excel',
+        name: '文案转换',
+        component: () => import('@/views/test/excel/index'),
+        meta: {title: '文案转换', icon: 'form'}
       }
     ]
   },

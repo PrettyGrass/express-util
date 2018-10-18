@@ -138,11 +138,11 @@
         for (let langKey in langs) {
           let lang = langs[langKey]
 
-          var desc = `/**
-          iOS 语言文件, 该文件自动生成, 不建议手动修改
-          如有调整, 联系 @author
-          语言: ${lang[this.getRemarkProp('lang')]}
-          创建时间: ${new Date()}
+          var desc = `/**\
+          \niOS 语言文件, 该文件自动生成, 不建议手动修改\
+          \n如有调整, 联系 @author\
+          \n语言: ${lang[this.getRemarkProp('lang')]}\
+          \n创建时间: ${new Date()}\
           \n*/\n\n`
           for (let key in lang) {
             let val = lang[key]
@@ -242,4 +242,3 @@
     width: 100%;
   }
 </style>
-

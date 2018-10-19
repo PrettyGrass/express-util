@@ -88,6 +88,7 @@
         console.log('langs:', langs)
         this.makeiOSFile(langs)
         this.makeAndroidFile(langs)
+        this.makeH5File(langs)
       },
       outPathAction() {
         var action = `action${Date.now()}`
@@ -185,7 +186,38 @@
           }
         }
       },
+      makeH5File(langs) {
 
+        // iOS
+        for (let langKey in langs) {
+          let lang = langs[langKey]
+
+          var desc = `# H5 语言文件, 该文件自动生成, 不建议手动修改\
+          \n# 如有调整, 联系 @author\
+          \n# 语言: ${lang[this.getRemarkProp('lang')]}\
+          \n# 创建时间: ${new Date()}\
+          \n\n`
+          for (let key in lang) {
+            let val = lang[key]
+            if (this.isInnerProp(key) || this.isRemarkProp(key)) {
+              continue
+            }
+            key = this.toHump(key)
+            desc += `#  ${val.remark} \n`
+            desc += `${key}: ${val.value}\n`
+          }
+          this.conf.desc += desc
+          if (fs.existsSync(this.conf.outPath)) {
+            fs.writeFileSync(path.join(this.conf.outPath, langKey + '.yml'), desc)
+          }
+        }
+      },
+      // 下划线转换驼峰
+      toHump(name) {
+          return name.replace(/\_(\w)/g, function(all, letter){
+            return letter.toUpperCase();
+          });
+      },
       transExcelFile(langs) {
         //workbook 对象，指的是整份 Excel 文档。我们在使用 js-xlsx 读取 Excel 文档之后就会获得 workbook 对象。
         var workbook = xlsx.readFile(this.conf.excelPath)
@@ -233,6 +265,7 @@
         return this.langs
       },
     }
+
   }
 </script>
 

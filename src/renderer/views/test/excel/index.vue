@@ -150,7 +150,7 @@
               continue
             }
             desc += `/// ${val.remark} \n`
-            desc += `"${key}="${val.value}";\n`
+            desc += `"${key}"="${val.value}";\n`
           }
           this.conf.desc += desc
           if (fs.existsSync(this.conf.outPath)) {

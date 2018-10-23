@@ -52,7 +52,7 @@
           desc: '',
 
         },
-        innerProps: ['description', 'key', 'index', 'module', 'area'],
+        innerProps: ['description', 'key', 'index', 'module', 'area', 'version'],
         langs: {}
       }
     },

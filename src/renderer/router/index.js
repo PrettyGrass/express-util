@@ -99,7 +99,7 @@ export const constantRouterMap = [
       {
         path: 'rename',
         name: '项目重命名',
-        component: () => import('@/views/tree/index'),
+        component: () => import('@/views/xcode/rename/index'),
         meta: {title: '项目重命名', icon: 'rename'}
       },
       {

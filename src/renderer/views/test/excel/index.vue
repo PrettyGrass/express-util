@@ -36,7 +36,7 @@
 </template>
 
 <script>
-  import {ipcRenderer, remote} from 'electron'
+  import {ipcRenderer} from 'electron'
 
   const fs = require('fs')
   const path = require('path')
@@ -165,21 +165,22 @@
         for (let langKey in langs) {
           let lang = langs[langKey]
 
-          var desc = `<?xml version="1.0" encoding="utf-8"?>\
-          \n<!--Android 语言文件, 该文件自动生成, 不建议手动修改 -->\
-          \n<!--如有调整, 联系 @author -->\
-          \n<!--语言: ${lang[this.getRemarkProp('lang')]} -->\
-          \n<!--创建时间: ${new Date()} -->\n
-          \n<resources>\n`
+          var desc = '<?xml version="1.0" encoding="utf-8"?>'
+
+          desc += '\n<!--Android 语言文件, 该文件自动生成, 不建议手动修改 -->'
+          desc += '\n<!--如有调整, 联系 @author -->'
+          desc += '\n<!--语言: ${lang[this.getRemarkProp(' + lang + ')]} -->'
+          desc += '\n<!--创建时间: ' + new Date() + ' -->'
+          desc += '\n<resources>\n'
           for (let key in lang) {
             let val = lang[key]
             if (this.isInnerProp(key) || this.isRemarkProp(key)) {
               continue
             }
-            desc += `  <!-- ${val.remark} -->\n`
-            desc += `  <string name="${key}">${val.value}</string>\n`
+            desc += '<!-- ' + val.remark + ' -->'
+            desc += '  <string name="' + key + '">' + val.value + '</string>\n'
           }
-          desc += `<resources>`
+          desc += '\n<resources>\n'
           this.conf.desc += desc
           if (fs.existsSync(this.conf.outPath)) {
             fs.writeFileSync(path.join(this.conf.outPath, 'string.' + langKey + '.xml'), desc)
@@ -214,9 +215,9 @@
       },
       // 下划线转换驼峰
       toHump(name) {
-          return name.replace(/\_(\w)/g, function(all, letter){
-            return letter.toUpperCase();
-          });
+        return name.replace(/\_(\w)/g, function (all, letter) {
+          return letter.toUpperCase();
+        });
       },
       transExcelFile(langs) {
         //workbook 对象，指的是整份 Excel 文档。我们在使用 js-xlsx 读取 Excel 文档之后就会获得 workbook 对象。

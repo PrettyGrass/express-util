@@ -177,8 +177,8 @@
             if (this.isInnerProp(key) || this.isRemarkProp(key)) {
               continue
             }
-            desc += '<!-- ' + val.remark + ' -->'
-            desc += '  <string name="' + key + '">' + val.value + '</string>\n'
+            desc += '\n  <!-- ' + val.remark + ' -->'
+            desc += '\n  <string name="' + key + '">' + val.value + '</string>'
           }
           desc += '\n<resources>\n'
           this.conf.desc += desc

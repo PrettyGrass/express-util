@@ -51,6 +51,19 @@ const CMD = {
       this.outLine[arg.action] = shellSpawn
     })
 
+    // 异步停止执行命令
+    ipcMain.on('app.cmd.exec.async.cancel', (event, arg) => {
+      let action = arg.action
+      if (!action || action === '') {
+        event.returnValue = 'action 不能为空'
+        return
+      }
+      // 退出
+      if (this.outLine[arg.action]) {
+        this.outLine[arg.action].kill('SIGHUP')
+        delete this.outLine[arg.action]
+      }
+    })
   }
 }
 

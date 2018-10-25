@@ -107,6 +107,12 @@ export const constantRouterMap = [
         name: '项目模板',
         component: () => import('@/views/tree/index'),
         meta: {title: '项目模板', icon: 'template'}
+      },
+      {
+        path: 'cocoapods',
+        name: 'CocoaPods依赖',
+        component: () => import('@/views/xcode/pods/index'),
+        meta: {title: 'Pods依赖', icon: 'template'}
       }
     ]
   },
@@ -209,4 +215,3 @@ export default new Router({
   scrollBehavior: () => ({y: 0}),
   routes: constantRouterMap
 })
-

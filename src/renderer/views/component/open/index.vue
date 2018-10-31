@@ -159,8 +159,8 @@
         this.$router.push('/component/create/' + this.type + '?podName=' + name)
       },
       selectedPodVer(name, ver) {
-        let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'`
-        clipboard.writeText(pod)
+        let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')} + '${name}/${ver}.podspec'`
+        clipboard.writeText(pod.replace(/\-/g, '_'))
         this.$message.success('依赖项已复制到剪切板!')
       },
       markDownAction() {

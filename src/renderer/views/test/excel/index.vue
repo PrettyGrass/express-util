@@ -154,8 +154,12 @@
             desc += `"${key}"="${val.value}";\n`
           }
           this.conf.desc += desc
-          if (fs.existsSync(this.conf.outPath)) {
-            fs.writeFileSync(path.join(this.conf.outPath, langKey + '.strings'), desc)
+          let aPath = path.join(this.conf.outPath, 'ios')
+          if (!fs.existsSync(aPath)) {
+            fs.mkdirSync(aPath)
+          }
+          if (fs.existsSync(aPath)) {
+            fs.writeFileSync(path.join(aPath, langKey + '.strings'), desc)
           }
         }
       },
@@ -182,8 +186,13 @@
           }
           desc += '\n<resources>\n'
           this.conf.desc += desc
-          if (fs.existsSync(this.conf.outPath)) {
-            fs.writeFileSync(path.join(this.conf.outPath, 'string.' + langKey + '.xml'), desc)
+
+          let aPath = path.join(this.conf.outPath, 'android')
+          if (!fs.existsSync(aPath)) {
+            fs.mkdirSync(aPath)
+          }
+          if (fs.existsSync(aPath)) {
+            fs.writeFileSync(path.join(aPath, 'string.' + langKey + '.xml'), desc)
           }
         }
       },
@@ -208,8 +217,12 @@
             desc += `${key}: ${val.value}\n`
           }
           this.conf.desc += desc
-          if (fs.existsSync(this.conf.outPath)) {
-            fs.writeFileSync(path.join(this.conf.outPath, langKey + '.yml'), desc)
+          let aPath = path.join(this.conf.outPath, 'h5')
+          if (!fs.existsSync(aPath)) {
+            fs.mkdirSync(aPath)
+          }
+          if (fs.existsSync(aPath)) {
+            fs.writeFileSync(path.join(aPath, langKey + '.yml'), desc)
           }
         }
       },

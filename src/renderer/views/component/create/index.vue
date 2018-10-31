@@ -106,6 +106,9 @@
           case 'open':
             type = currentConfig.openSourceDir
             break
+          case 'opensfw':
+            type = currentConfig.openSourceSFWDir
+            break
           case 'close':
             type = currentConfig.closeSourceDir
             break

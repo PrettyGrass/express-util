@@ -128,9 +128,15 @@ export const constantRouterMap = [
     children: [
       {
         path: 'open',
-        name: '开源组件',
+        name: '开源组件(A)',
         component: () => import('@/views/component/open/index'),
-        meta: {title: '开源组件', icon: 'opensource'}
+        meta: {title: '开源组件(A)', icon: 'opensource'}
+      },
+      {
+        path: 'opensfw',
+        name: '开源组件(SFW)',
+        component: () => import('@/views/component/open/index'),
+        meta: {title: '开源组件(SFW)', icon: 'opensource'}
       },
       {
         path: 'close',
@@ -138,12 +144,12 @@ export const constantRouterMap = [
         component: () => import('@/views/component/open/index'),
         meta: {title: '闭源组件', icon: 'closesource'}
       },
-      {
-        path: 'inner',
-        name: '自研组件',
-        component: () => import('@/views/tree/index'),
-        meta: {title: '自研组件', icon: 'develop'}
-      },
+      // {
+      //   path: 'inner',
+      //   name: '自研组件',
+      //   component: () => import('@/views/tree/index'),
+      //   meta: {title: '自研组件', icon: 'develop'}
+      // },
       {
         path: 'create/:type',
         name: '添加组件',

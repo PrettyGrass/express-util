@@ -15,7 +15,6 @@ const cliPack = {
     filename: 'excel-to-string-cli-bundle.js'
   },
   target: 'node',
-  // mode: 'production',
   externals: nodeModules,
   plugins: []
 }

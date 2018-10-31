@@ -19,8 +19,8 @@
         </el-col>
       </el-form-item>
 
-      <el-form-item label="desc">
-        <el-input type="textarea" :autosize="{ minRows: 16, maxRows: 32}" v-model="conf.desc"></el-input>
+      <el-form-item label="日志">
+        <el-input type="textarea" :autosize="{ minRows: 16, maxRows: 16}" v-model="conf.desc"></el-input>
       </el-form-item>
 
       <el-form-item label="">
@@ -41,19 +41,17 @@
   const fs = require('fs')
   const path = require('path')
   const xlsx = require('xlsx')
+  const trans = require('../../../api/excel-to-string')
 
   export default {
     data() {
       return {
-        content: '',
         conf: {
           outPath: '',
           excelPath: '',
           desc: '',
 
         },
-        innerProps: ['description', 'key', 'index', 'module', 'area', 'version'],
-        langs: {}
       }
     },
     methods: {
@@ -67,8 +65,7 @@
         ipcRenderer.send('app.system.select.file', {
           action: action,
           name: action,
-          title: '选择Excel文件',
-          extensions: ['md']
+          title: '选择Excel文件'
         })
       },
       saveAction() {
@@ -84,11 +81,15 @@
           return
         }
 
-        var langs = this.transExcelFile(this.langs)
-        console.log('langs:', langs)
-        this.makeiOSFile(langs)
-        this.makeAndroidFile(langs)
-        this.makeH5File(langs)
+        trans.log = (msg) => {
+          this.conf.desc += `${msg}\n`
+        }
+        trans.conf.h5 = true
+        trans.conf.ios = true
+        trans.conf.android = true
+        trans.conf.excelPath = this.conf.excelPath
+        trans.conf.outPath = this.conf.outPath
+        trans.transAction()
       },
       outPathAction() {
         var action = `action${Date.now()}`
@@ -98,186 +99,9 @@
         ipcRenderer.send('app.system.select.dir', {
           action: action,
           name: action,
-          title: '保存语言文目录件',
-          extensions: ['md']
+          title: '保存语言文目录件'
         })
-
-      },
-      getProp(str = '') {
-        var strs = this.getProps(str)
-        return strs[0] || null
-      },
-      getProps(str = '') {
-        // 匹配 <xxx>
-        var strs = str.match(/\<.*?(?=\>)/g)
-        strs = strs.map(function (s) {
-          return s.replace('<', '')
-        })
-        return strs
-      },
-      isInnerProp(str = '') {
-        return this.innerProps.indexOf(str) >= 0
-      },
-      isRemarkProp(str = '') {
-        return str.indexOf('_remark_') >= 0
-      },
-      getRemarkProp(str = '') {
-        return str + '_remark_'
-      },
-      getLang(str = '', langs = null) {
-        langs = langs || this.langs
-        var lang = langs[str]
-        if (!lang) {
-          lang = {}
-          langs[str] = lang
-        }
-        return lang
-      },
-      makeiOSFile(langs) {
-
-        // iOS
-        for (let langKey in langs) {
-          let lang = langs[langKey]
-
-          var desc = `/**\
-          \niOS 语言文件, 该文件自动生成, 不建议手动修改\
-          \n如有调整, 联系 @author\
-          \n语言: ${lang[this.getRemarkProp('lang')]}\
-          \n创建时间: ${new Date()}\
-          \n*/\n\n`
-          for (let key in lang) {
-            let val = lang[key]
-            if (this.isInnerProp(key) || this.isRemarkProp(key)) {
-              continue
-            }
-            desc += `/// ${val.remark} \n`
-            desc += `"${key}"="${val.value}";\n`
-          }
-          this.conf.desc += desc
-          let aPath = path.join(this.conf.outPath, 'ios')
-          if (!fs.existsSync(aPath)) {
-            fs.mkdirSync(aPath)
-          }
-          if (fs.existsSync(aPath)) {
-            fs.writeFileSync(path.join(aPath, langKey + '.strings'), desc)
-          }
-        }
-      },
-      makeAndroidFile(langs) {
-
-        // Android
-        for (let langKey in langs) {
-          let lang = langs[langKey]
-
-          var desc = '<?xml version="1.0" encoding="utf-8"?>'
-
-          desc += '\n<!--Android 语言文件, 该文件自动生成, 不建议手动修改 -->'
-          desc += '\n<!--如有调整, 联系 @author -->'
-          desc += '\n<!--语言: ${lang[this.getRemarkProp(' + lang + ')]} -->'
-          desc += '\n<!--创建时间: ' + new Date() + ' -->'
-          desc += '\n<resources>\n'
-          for (let key in lang) {
-            let val = lang[key]
-            if (this.isInnerProp(key) || this.isRemarkProp(key)) {
-              continue
-            }
-            desc += '\n  <!-- ' + val.remark + ' -->'
-            desc += '\n  <string name="' + key + '">' + val.value + '</string>'
-          }
-          desc += '\n<resources>\n'
-          this.conf.desc += desc
-
-          let aPath = path.join(this.conf.outPath, 'android')
-          if (!fs.existsSync(aPath)) {
-            fs.mkdirSync(aPath)
-          }
-          if (fs.existsSync(aPath)) {
-            fs.writeFileSync(path.join(aPath, 'string.' + langKey + '.xml'), desc)
-          }
-        }
-      },
-      makeH5File(langs) {
-
-        // iOS
-        for (let langKey in langs) {
-          let lang = langs[langKey]
-
-          var desc = `# H5 语言文件, 该文件自动生成, 不建议手动修改\
-          \n# 如有调整, 联系 @author\
-          \n# 语言: ${lang[this.getRemarkProp('lang')]}\
-          \n# 创建时间: ${new Date()}\
-          \n\n`
-          for (let key in lang) {
-            let val = lang[key]
-            if (this.isInnerProp(key) || this.isRemarkProp(key)) {
-              continue
-            }
-            key = this.toHump(key)
-            desc += `#  ${val.remark} \n`
-            desc += `${key}: ${val.value}\n`
-          }
-          this.conf.desc += desc
-          let aPath = path.join(this.conf.outPath, 'h5')
-          if (!fs.existsSync(aPath)) {
-            fs.mkdirSync(aPath)
-          }
-          if (fs.existsSync(aPath)) {
-            fs.writeFileSync(path.join(aPath, langKey + '.yml'), desc)
-          }
-        }
-      },
-      // 下划线转换驼峰
-      toHump(name) {
-        return name.replace(/\_(\w)/g, function (all, letter) {
-          return letter.toUpperCase();
-        });
-      },
-      transExcelFile(langs) {
-        //workbook 对象，指的是整份 Excel 文档。我们在使用 js-xlsx 读取 Excel 文档之后就会获得 workbook 对象。
-        var workbook = xlsx.readFile(this.conf.excelPath)
-        // 获取 Excel 中所有表名
-        const sheetNames = workbook.SheetNames;
-        // 根据表名获取对应某张表
-        const worksheet = workbook.Sheets[sheetNames[0]];
-        //返回json数据
-        var datas = xlsx.utils.sheet_to_json(worksheet);
-
-        // 先找到语言支持数量
-        var newDatas = []
-        for (let index in datas) {
-          let line = datas[index]
-
-          var data = {}
-          newDatas.push(data)
-          for (let fullkey in line) {
-            let key = this.getProp(fullkey)
-            let cnMark = fullkey.replace(`<${key}>`, '')
-            data[key] = line[fullkey]
-            data[this.getRemarkProp(key)] = cnMark
-          }
-        }
-
-        // 生成语言包 excel 结构转换 [{一条多个国家的文案}] 转成 [{一个国家的多条文案}]
-        for (let index in newDatas) {
-          let line = newDatas[index]
-
-          // 枚举一条文案的所有翻译
-          for (let prop in line) {
-            if (this.isInnerProp(prop) || this.isRemarkProp(prop)) {
-              continue
-            }
-            var lang = this.getLang(prop, langs)
-            lang[this.getRemarkProp('lang')] = line[prop + '_remark_']
-            // 添加国际化行
-            lang[line['key']] = {
-              key: line['key'],
-              value: line[prop],
-              remark: line['description']
-            }
-          }
-        }
-        return this.langs
-      },
+      }
     }
 
   }

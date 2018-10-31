@@ -6,9 +6,15 @@ const path = require('path')
 const Trans = {
   conf: {excelPath: '', outPath: '', h5: false, ios: false, android: false},
   langs: {},
+  log: null,
   innerProps: ['description', 'key', 'index', 'module', 'area', 'version'],
   message: (msg) => {
-    console.log('log:', msg)
+    if (Trans.log) {
+      Trans.log(msg)
+    } else {
+      console.log('log:', msg)
+    }
+
   },
   transAction: () => {
     if (!fs.existsSync(Trans.conf.excelPath)) {

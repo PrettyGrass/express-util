@@ -206,7 +206,6 @@
         for (var index in list) {
           var val = list[index].replace(/[\ |\.|\=|\'|\"|static\/]/g, '')
           var reg = /^[\d]+$/
-          console.log('lll', val, list)
           if (reg.test(val)) {
             return list[index].replace(/[|\=|\'|\"|static\/]/g, '')
           }

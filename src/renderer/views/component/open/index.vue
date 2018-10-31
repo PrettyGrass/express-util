@@ -5,9 +5,9 @@
         <el-input placeholder="搜索" v-model="searchText" style="width: 200px" clearable></el-input>
         <el-button @click="fetchData">刷新</el-button>
         <el-button @click="markDownAction">生成 Markdown</el-button>
-        <router-link class="inlineBlock" to="/component/create/open">
-          <el-button>添加组件</el-button>
-        </router-link>
+        <!--<router-link class="inlineBlock" to="/component/create/open">-->
+        <el-button @click="addVersion()">添加组件</el-button>
+        <!--</router-link>-->
       </el-header>
 
       <el-main>
@@ -126,6 +126,9 @@
           case 'open':
             this.libDir = current.openSourceDir
             break
+          case 'opensfw':
+            this.libDir = current.openSourceSFWDir
+            break
           case 'close':
             this.libDir = current.closeSourceDir
             break
@@ -152,11 +155,12 @@
         this.listShow = items
       },
       addVersion(name) {
+        name = name || ''
         this.$router.push('/component/create/' + this.type + '?podName=' + name)
       },
       selectedPodVer(name, ver) {
-        let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')}+'${name}/${ver}.podspec'`
-        clipboard.writeText(pod)
+        let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')} + '${name}/${ver}.podspec'`
+        clipboard.writeText(pod.replace(/\-/g, '_'))
         this.$message.success('依赖项已复制到剪切板!')
       },
       markDownAction() {

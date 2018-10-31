@@ -41,14 +41,14 @@
       <el-form-item label="开源组件目录">
         <el-input type="text" v-model="currentConf.openSourceDir"></el-input>
       </el-form-item>
-      <el-form-item label="定制组件目录">
-        <el-input type="text" v-model="currentConf.openSourceCustomDir"></el-input>
+      <!--<el-form-item label="定制组件目录">-->
+        <!--<el-input type="text" v-model="currentConf.openSourceCustomDir"></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="开源组件静态FW目录">
+        <el-input type="text" v-model="currentConf.openSourceSFWDir"></el-input>
       </el-form-item>
       <el-form-item label="闭源组件目录">
         <el-input type="text" v-model="currentConf.closeSourceDir"></el-input>
-      </el-form-item>
-      <el-form-item label="自研组件目录">
-        <el-input type="text" v-model="currentConf.innerSourceDir"></el-input>
       </el-form-item>
 
       <el-form-item label="七牛 AccessKey">

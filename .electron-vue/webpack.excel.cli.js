@@ -11,7 +11,7 @@ const cliPack = {
     node: './src/renderer/api/excel.cli.js'
   },
   output: {
-    path: path.resolve(__dirname, '../build'),
+    path: path.resolve(__dirname, '../dist/cli'),
     filename: 'excel-to-string-cli-bundle.js'
   },
   target: 'node',

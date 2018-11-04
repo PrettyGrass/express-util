@@ -8,7 +8,7 @@ fs.readdirSync('node_modules')
 
 const cliPack = {
   entry: {
-    node: './src/renderer/api/excel.cli.js'
+    node: './src/renderer/cli/excel.cli.js'
   },
   output: {
     path: path.resolve(__dirname, '../dist/cli'),

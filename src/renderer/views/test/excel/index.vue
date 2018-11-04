@@ -41,7 +41,7 @@
   const fs = require('fs')
   const path = require('path')
   const xlsx = require('xlsx')
-  const trans = require('../../../api/excel-to-string')
+  const trans = require('../../../cli/excel-to-string')
 
   export default {
     data() {

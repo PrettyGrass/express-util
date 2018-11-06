@@ -26,7 +26,7 @@
         <el-checkbox-group v-model="form.type">
           <el-checkbox label="Online activities" name="type"></el-checkbox>
           <el-checkbox label="Promotion activities" name="type"></el-checkbox>
-          <el-checkbox label="Offline activities" name="type"></el-checkbox>
+          <el-ri label="Offline activities" name="type"></el-ri>
           <el-checkbox label="Simple brand exposure" name="type"></el-checkbox>
         </el-checkbox-group>
       </el-form-item>

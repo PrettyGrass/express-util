@@ -92,8 +92,9 @@ const Trans = {
         if (val.area.filter(v => ['all_native', 'all', 'ios'].includes(v)).length === 0) {
           continue
         }
+        let value = Trans.toWildString(val.value)
         desc += `/// ${val.remark} \n`
-        desc += `"${key}"="${val.value}";\n`
+        desc += `"${key}"="${value}";\n`
       }
       Trans.conf.desc += desc
       let aPath = path.join(Trans.conf.outPath, 'ios')
@@ -183,6 +184,12 @@ const Trans = {
       return letter.toUpperCase();
     });
   },
+
+  //{{...}}转化成OC通配字符
+  toWildString:function(name){
+    return name.replace(/\{\{.*?\}\}/g, '%@')
+  },
+
   transExcelFile: function (langs) {
     //workbook 对象，指的是整份 Excel 文档。我们在使用 js-xlsx 读取 Excel 文档之后就会获得 workbook 对象。
     var workbook = xlsx.readFile(Trans.conf.excelPath)

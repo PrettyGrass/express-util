@@ -105,8 +105,15 @@ export const constantRouterMap = [
       {
         path: 'template',
         name: '项目模板',
-        component: () => import('@/views/tree/index'),
+        component: () => import('@/views/xcode/tpl/index'),
         meta: {title: '项目模板', icon: 'template'}
+      },
+      {
+        path: 'addtpl',
+        name: '项目模板添加',
+        hidden: true,
+        component: () => import('@/views/xcode/tpl/add/index'),
+        meta: {title: '项目模板添加', icon: 'template'}
       },
       {
         path: 'cocoapods',

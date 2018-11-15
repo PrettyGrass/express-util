@@ -38,6 +38,9 @@ const Config = {
     ipcMain.on('app.user.config.current', (event, arg) => {
       event.returnValue = this.getCurrentConfig()
     })
+    ipcMain.on('app.user.config.name', (event, arg) => {
+      event.returnValue = this.configName(event, arg)
+    })
   },
   initConfigs: function (event) {
     var content = null
@@ -57,6 +60,18 @@ const Config = {
   },
   getConfigs: function (event) {
     return this._config
+  },
+  configName: function (event, arg) {
+
+    if (!arg || !arg.name) {
+      return null
+    }
+    let newConf = arg.conf
+    if (newConf) {
+      this._config[arg.name] = newConf
+    }
+    let conf = this._config[arg.name] || {}
+    return conf
   },
   getCurrentConfig: function () {
     var currentConf = this._config.confs[this._config.currentConfId]

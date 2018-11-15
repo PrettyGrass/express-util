@@ -43,7 +43,7 @@
   import {ipcRenderer} from 'electron'
 
   var fs = require('fs')
-  const currentConfig = ipcRenderer.sendSync('app.user.config.current', {sync: true})
+  // const xcodeConf = ipcRenderer.sendSync('app.user.config.name', {name: "xcode"})
 
   export default {
     data() {
@@ -52,15 +52,13 @@
         oldName: '',
         newName: '',
         desc: '',
+        form: {},
+        xcodeConf: ipcRenderer.sendSync('app.user.config.name', {name: "xcode"})
       }
     },
     created() {
-      let podName = this.$route.query.podName
-      if (podName && podName.length > 0) {
-        this.form.podName = podName
-        this.disablePodName = true
-      }
-      this.form.podType = this.$route.params.type
+
+      console.log('xcodeConf', this.xcodeConf)
     },
     methods: {
       outPathAction() {
@@ -77,6 +75,9 @@
       },
       renameAction() {
 
+      },
+      saveConf() {
+        ipcRenderer.sendSync('app.user.config.name', {name: 'xcode', conf: this.xcodeConf})
       }
     }
   }

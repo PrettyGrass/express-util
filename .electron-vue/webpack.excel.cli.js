@@ -22,10 +22,10 @@ const cliPack = {
 if (process.env.NODE_ENV === 'production') {
 
   cliPack.plugins.push(
-    new BabiliWebpackPlugin(),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': '"production"'
-    }),
+    // new BabiliWebpackPlugin(),
+    // new webpack.DefinePlugin({
+    //   'process.env.NODE_ENV': '"production"'
+    // }),
     new webpack.LoaderOptionsPlugin({
       minimize: true
     }),

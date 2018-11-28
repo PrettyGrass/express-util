@@ -48,7 +48,8 @@ const Trans = {
   },
   getProps: function (str = '') {
     // 匹配 <xxx>
-    var strs = str.match(/\<.*?(?=\>)/g)
+    var strs = str.match(/\<.*?(?=\>)/g) || []
+    console.log('strs', strs, str)
     strs = strs.map(function (s) {
       return s.replace('<', '')
     })
@@ -201,12 +202,24 @@ const Trans = {
     /// 是目录则枚举目录下面的所有 .xlsx 文件
     if (stat.isDirectory()) {
       let list = fs.readdirSync(Trans.conf.excelPath)
-      list.forEach((file, index) => {
-        if (file.lastIndexOf('xlsx') > 0) {
-          let fullPth = path.join(Trans.conf.excelPath, file)
-          Trans.transExcelFile(fullPth, langs)
+      var fileInfo = {}
+      var fileMtime = []
+      /// 按最后修改时间排序, 新文案覆盖旧文案
+      for (let index in list) {
+        let fullPth = path.join(Trans.conf.excelPath, list[index])
+        if (fullPth.lastIndexOf('xlsx') > 0) {
+          let stat = fs.statSync(fullPth)
+          let mtime = stat.mtime.getTime()
+          fileInfo[mtime] = fullPth
+          fileMtime.push(mtime)
         }
-
+      }
+      fileMtime = fileMtime.sort(function (x, y) {
+        return x - y;
+      });
+      fileMtime.forEach((mtime, index) => {
+        let fullPth = fileInfo[mtime]
+        Trans.transExcelFile(fullPth, langs)
       })
     }
     /// 是文件直接读取
@@ -218,6 +231,7 @@ const Trans = {
     var workbook = xlsx.readFile(file)
     // 获取 Excel 中所有表名
     const sheetNames = workbook.SheetNames;
+    console.log('sheetNames', sheetNames)
     sheetNames.forEach((name) => {
       // 根据表名获取对应某张表
       const worksheet = workbook.Sheets[name];
@@ -237,7 +251,7 @@ const Trans = {
       var data = {}
       newDatas.push(data)
       for (let fullkey in line) {
-        let key = Trans.getProp(fullkey)
+        let key = Trans.getProp(fullkey) || '未识别语言'
         let cnMark = fullkey.replace(`<${key}>`, '')
         data[key] = line[fullkey]
         data[Trans.getRemarkProp(key)] = cnMark

@@ -30,11 +30,12 @@
             <el-button @click="projectPathAction">添加</el-button>
           </el-col>
         </el-form-item> -->
-      <el-form-item label="Podfile">
-        <el-col :span="18">
-          <el-input type="textarea" :autosize="{ minRows: 12, maxRows: 12}" v-model="podContent"></el-input>
-        </el-col>
-      </el-form-item>
+      <!--<el-form-item label="Podfile">-->
+        <!--<el-col :span="18">-->
+          <!--<codemirror v-model="podContent" :options="codeOption"></codemirror>-->
+          <!--&lt;!&ndash;<el-input type="textarea" :autosize="{ minRows: 12, maxRows: 12}" v-model="podContent"></el-input>&ndash;&gt;-->
+        <!--</el-col>-->
+      <!--</el-form-item>-->
       <el-form-item>
         <el-button type="primary" @click="initPod">初始化
         </el-button>
@@ -78,6 +79,7 @@
         </el-table>
       </el-main>
     </el-form>
+    <!--<codemirror v-model="podContent" :options="codeOption"></codemirror>-->
   </div>
 </template>
 
@@ -103,8 +105,10 @@
         podContent: '',
         originPodContent: '',
         pods: [],
-        currentAction: null
+        currentAction: null,
+        codeOption: {
 
+        }
       }
     },
     created() {

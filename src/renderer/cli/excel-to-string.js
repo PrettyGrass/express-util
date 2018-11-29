@@ -209,7 +209,7 @@ const Trans = {
         let fullPth = path.join(Trans.conf.excelPath, list[index])
         if (fullPth.lastIndexOf('xlsx') > 0) {
           let stat = fs.statSync(fullPth)
-          let mtime = stat.mtime.getTime()
+          let mtime = stat.ctime.getTime()
           fileInfo[mtime] = fullPth
           fileMtime.push(mtime)
         }

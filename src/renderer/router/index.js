@@ -120,6 +120,12 @@ export const constantRouterMap = [
         name: 'CocoaPods依赖',
         component: () => import('@/views/xcode/pods/index'),
         meta: {title: 'Pods依赖', icon: 'template'}
+      },
+      {
+        path: 'compare',
+        name: '组件编译',
+        component: () => import('@/views/xcode/pods/index'),
+        meta: {title: '组件编译', icon: 'template'}
       }
     ]
   },
@@ -217,6 +223,12 @@ export const constantRouterMap = [
         name: '文案转换',
         component: () => import('@/views/test/excel/index'),
         meta: {title: '文案转换', icon: 'form'}
+      },
+      {
+        path: 'monacoeditor',
+        name: '代码编辑器',
+        component: () => import('@/views/test/code-edit/index'),
+        meta: {title: '代码编辑器', icon: 'form'}
       }
     ]
   },

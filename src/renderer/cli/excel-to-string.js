@@ -18,7 +18,7 @@ const Trans = {
   },
   transAction: () => {
     if (!fs.existsSync(Trans.conf.excelPath)) {
-      Trans.message('请选择Excel文件')
+      Trans.message('请选择Excel文件或目录')
       return
     }
     if (!fs.existsSync(Trans.conf.outPath)) {
@@ -26,8 +26,9 @@ const Trans = {
       return
     }
 
-    var langs = Trans.transExcelFile(Trans.langs)
-    // console.log('langs:', langs)
+    Trans.transExcel(Trans.langs)
+    var langs = Trans.langs
+    /// console.log('langs:', langs)
     if (Trans.conf.ios) {
       Trans.message('ios文案')
       Trans.makeiOSFile(langs)
@@ -47,7 +48,8 @@ const Trans = {
   },
   getProps: function (str = '') {
     // 匹配 <xxx>
-    var strs = str.match(/\<.*?(?=\>)/g)
+    var strs = str.match(/\<.*?(?=\>)/g) || []
+    console.log('strs', strs, str)
     strs = strs.map(function (s) {
       return s.replace('<', '')
     })
@@ -80,8 +82,10 @@ const Trans = {
           \niOS 语言文件, 该文件自动生成, 不建议手动修改\
           \n如有调整, 联系 @author\
           \n语言: ${lang[Trans.getRemarkProp('lang')]}\
-          \n创建时间: ${new Date()}\
           \n*/\n\n`
+
+      /// \n创建时间: ${new Date()}\
+
       for (let key in lang) {
         let val = lang[key]
 
@@ -92,8 +96,9 @@ const Trans = {
         if (val.area.filter(v => ['all_native', 'all', 'ios'].includes(v)).length === 0) {
           continue
         }
+        let value = Trans.toWildString(val.value)
         desc += `/// ${val.remark} \n`
-        desc += `"${key}"="${val.value}";\n`
+        desc += `"${key}"="${value}";\n`
       }
       Trans.conf.desc += desc
       let aPath = path.join(Trans.conf.outPath, 'ios')
@@ -116,7 +121,7 @@ const Trans = {
       desc += '\n<!--Android 语言文件, 该文件自动生成, 不建议手动修改 -->'
       desc += '\n<!--如有调整, 联系 @author -->'
       desc += '\n<!--语言: ${lang[Trans.getRemarkProp(' + lang + ')]} -->'
-      desc += '\n<!--创建时间: ' + new Date() + ' -->'
+      //desc += '\n<!--创建时间: ' + new Date() + ' -->'
       desc += '\n<resources>\n'
       for (let key in lang) {
         let val = lang[key]
@@ -152,8 +157,10 @@ const Trans = {
       var desc = `# H5 语言文件, 该文件自动生成, 不建议手动修改\
           \n# 如有调整, 联系 @author\
           \n# 语言: ${lang[Trans.getRemarkProp('lang')]}\
-          \n# 创建时间: ${new Date()}\
           \n\n`
+
+      /// \n# 创建时间: ${new Date()}\
+
       for (let key in lang) {
         let val = lang[key]
         if (Trans.isInnerProp(key) || Trans.isRemarkProp(key)) {
@@ -183,15 +190,58 @@ const Trans = {
       return letter.toUpperCase();
     });
   },
-  transExcelFile: function (langs) {
+
+  //{{...}}转化成OC通配字符
+  toWildString: function (name) {
+    return name.replace(/\{\{.*?\}\}/g, '%@')
+  },
+
+  transExcel: function (langs) {
     //workbook 对象，指的是整份 Excel 文档。我们在使用 js-xlsx 读取 Excel 文档之后就会获得 workbook 对象。
-    var workbook = xlsx.readFile(Trans.conf.excelPath)
+    let stat = fs.statSync(Trans.conf.excelPath)
+    /// 是目录则枚举目录下面的所有 .xlsx 文件
+    if (stat.isDirectory()) {
+      let list = fs.readdirSync(Trans.conf.excelPath)
+      var fileInfo = {}
+      var fileMtime = []
+      /// 按最后修改时间排序, 新文案覆盖旧文案
+      for (let index in list) {
+        let fullPth = path.join(Trans.conf.excelPath, list[index])
+        if (fullPth.lastIndexOf('xlsx') > 0) {
+          let stat = fs.statSync(fullPth)
+          let mtime = stat.mtime.getTime()
+          fileInfo[mtime] = fullPth
+          fileMtime.push(mtime)
+        }
+      }
+      fileMtime = fileMtime.sort(function (x, y) {
+        return x - y;
+      });
+      fileMtime.forEach((mtime, index) => {
+        let fullPth = fileInfo[mtime]
+        Trans.transExcelFile(fullPth, langs)
+      })
+    }
+    /// 是文件直接读取
+    else if (stat.isFile()) {
+      Trans.transExcelFile(Trans.conf.excelPath, langs)
+    }
+  },
+  transExcelFile: function (file, langs) {
+    var workbook = xlsx.readFile(file)
     // 获取 Excel 中所有表名
     const sheetNames = workbook.SheetNames;
-    // 根据表名获取对应某张表
-    const worksheet = workbook.Sheets[sheetNames[0]];
-    //返回json数据
-    var datas = xlsx.utils.sheet_to_json(worksheet);
+    console.log('sheetNames', sheetNames)
+    sheetNames.forEach((name) => {
+      // 根据表名获取对应某张表
+      const worksheet = workbook.Sheets[name];
+      //返回json数据
+      var datas = xlsx.utils.sheet_to_json(worksheet);
+      Trans.transExcelData(datas, langs)
+    })
+
+  },
+  transExcelData: function (datas, langs) {
 
     // 先找到语言支持数量
     var newDatas = []
@@ -201,7 +251,7 @@ const Trans = {
       var data = {}
       newDatas.push(data)
       for (let fullkey in line) {
-        let key = Trans.getProp(fullkey)
+        let key = Trans.getProp(fullkey) || '未识别语言'
         let cnMark = fullkey.replace(`<${key}>`, '')
         data[key] = line[fullkey]
         data[Trans.getRemarkProp(key)] = cnMark

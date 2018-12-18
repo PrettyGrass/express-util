@@ -23,6 +23,15 @@ const Dialog = {
         }
       })
     })
+    ipcMain.on('app.system.select.path', (event, arg) => {
+      dialog.showOpenDialog({
+        properties: ['openFile', 'openDirectory']
+      }, (files) => {
+        if (files && arg.action) {
+          event.sender.send(arg.action, files)
+        }
+      })
+    })
     ipcMain.on('app.system.save.file', (event, arg) => {
 
       const options = {

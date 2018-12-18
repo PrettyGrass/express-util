@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form ref="form" :model="conf" label-width="160px">
-      <el-form-item label="Excel文案文件">
+      <el-form-item label="Excel文案文件(夹)">
         <el-col :span="16" style="text-align: center">
           <el-input type="text" v-model="conf.excelPath"></el-input>
         </el-col>
@@ -62,10 +62,10 @@
         ipcRenderer.once(action, (e, file) => {
           this.conf.excelPath = file.toString()
         })
-        ipcRenderer.send('app.system.select.file', {
+        ipcRenderer.send('app.system.select.path', {
           action: action,
           name: action,
-          title: '选择Excel文件'
+          title: '选择Excel文件(夹)'
         })
       },
       saveAction() {

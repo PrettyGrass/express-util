@@ -270,8 +270,8 @@ const Trans = {
         var lang = Trans.getLang(prop, langs)
         lang[Trans.getRemarkProp('lang')] = line[prop + '_remark_']
 
-        // 国际化文案域
-        var area = line['area'] || ''
+        // 国际化文案域, 鉴于翻译人员难以按照文档标准来, 如果没有设置域的, 默认全部
+        var area = line['area'] || 'all'
         area = area.replace(/[\ |\n]/g, '').split(',')
         area = area.filter(function (item) {
           return item.length > 0

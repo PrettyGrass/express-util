@@ -97,10 +97,22 @@ export const constantRouterMap = [
         meta: {title: '新建模块', icon: 'library'}
       },
       {
+        path: 'UI',
+        name: '新建UI',
+        component: () => import('@/views/xcode/UI/index'),
+        meta: {title: '新建UI', icon: 'library'}
+      },{
+
         path: 'rename',
         name: '项目重命名',
         component: () => import('@/views/xcode/rename/index'),
         meta: {title: '项目重命名', icon: 'rename'}
+      },
+      {
+        path: 'icon',
+        name: '替换icon',
+        component: () => import('@/views/xcode/icon/index'),
+        meta: {title: '替换icon', icon: 'rename'}
       },
       {
         path: 'template',

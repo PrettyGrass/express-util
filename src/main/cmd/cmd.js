@@ -38,7 +38,13 @@ const CMD = {
       // console.log('---', gitPath)
       // 正式执行命令
       let shell = arg.shell
-      let params = arg.params || []
+      var temParams = arg.params
+      if (arg.fromAssets == true && arg.scriptName !== '') {
+        var scriptPath = path.join(global.__root, `assets/${arg.scriptName}`)
+        temParams.unshift(scriptPath)
+      }
+      console.log("######脚本参数:",temParams)
+      let params = temParams || []
       var shellSpawn = spawn(shell, params)
       shellSpawn.stdout.on('data', function (s) {
         event.sender.send(arg.action, {data: s.toString(), code: 0})

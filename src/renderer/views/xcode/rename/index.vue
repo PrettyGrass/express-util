@@ -73,7 +73,21 @@
           extensions: ['md']
         })
       },
+
       renameAction() {
+
+        var action = `action${Date.now()}`
+        ipcRenderer.on(action, (e, data) => {
+            this.desc = data.data
+        })
+
+        ipcRenderer.send('app.cmd.exec.async', {
+          shell: 'python',
+          params: ['-f',this.outPath ,'-i',this.oldName,'-o',this.newName],
+          action: action,
+          fromAssets: true,
+          scriptName: "XcodeRename.py"
+        })
 
       },
       saveConf() {

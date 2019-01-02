@@ -1,18 +1,176 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import logging
 import os
 import sys
+import hashlib
+import re
+import zipfile
+import json
+import shutil
+import hashlib
 
 sys.path.append('./Confusion')
-import shutil
-import re
-import FileListUtil
-import hashlib
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
+def _listFileDir(dir, ext, ignore, recursion, resultList, isDir):
+    ig = ['.git', 'Pods', 'Podfile', 'Podfile.lock']
+    if None == ignore:
+        ignore = ig
+    else:
+        ignore.extend(ig)
+
+    path = os.listdir(dir)
+    for p in path:
+        # 按.分割文件名
+        nameSp = re.split('\.', p)
+        nameSpLen = len(nameSp)
+
+        if len(set(ignore).intersection(set(nameSp))) > 0:
+            continue
+
+        file = os.path.join(dir, p)
+
+        if isinstance(ext, str):
+            # 查找目标是文件
+            if False == isDir and os.path.isfile(file) and False == (p in ignore):
+                # 检查后缀
+                if nameSpLen > 1 and ext in nameSp[nameSpLen - 1] == ext:
+                    resultList.append(file)
+
+            # 查找目标是文件夹
+            elif isDir and os.path.isdir(file) and False == (p in ignore) and recursion:
+                # 检查后缀
+                if nameSpLen > 1 and ext in nameSp[nameSpLen - 1] == ext:
+                    resultList.append(file)
+
+            # 递归操作
+            if os.path.isdir(file) and False == (p in ignore) and recursion:
+                _listFileDir(file, ext, ignore, recursion, resultList, isDir)
+
+        elif isinstance(ext, list):
+
+            for suffix in ext:
+                # 查找目标是文件
+                if False == isDir and os.path.isfile(file) and False == (p in ignore):
+                    # 检查后缀
+                    if nameSpLen > 1 and suffix in nameSp[nameSpLen - 1] == ext:
+                        resultList.append(file)
+
+                # 查找目标是文件夹
+                elif isDir and os.path.isdir(file) and False == (p in ignore) and recursion:
+                    # 检查后缀
+                    if nameSpLen > 1 and suffix in nameSp[nameSpLen - 1] == ext:
+                        resultList.append(file)
+
+                # 递归操作
+                if os.path.isdir(file) and False == (p in ignore) and recursion:
+                    _listFileDir(file, suffix, ignore, recursion, resultList, isDir)
+        else:
+            pass;
+
+
+def listDir(dir, ext, ignore=None, recursion=True):
+    resultList = []
+    _listFileDir(dir, ext, ignore, recursion, resultList, True)
+    return resultList
+
+
+# 递归寻找指定目录下面的指定后缀文件
+def listFile(dir, ext, ignore=None, recursion=True):
+    resultList = []
+    _listFileDir(dir, ext, ignore, recursion, resultList, False)
+    return resultList
+
+
+def GetFileMd5(filename):
+    if not os.path.isfile(filename):
+        return
+    myhash = hashlib.md5()
+    f = file(filename, 'rb')
+    while True:
+        b = f.read(8096)
+        if not b:
+            break
+        myhash.update(b)
+    f.close()
+    return myhash.hexdigest()
+
+
+def GetTextContentMd5(content):
+    hash = hashlib.md5()
+    hash.update(bytes(content))
+    return hash.hexdigest()
+
+
+# 读取文本文件
+def getFileContent(filename):
+    if not os.path.isfile(filename):
+        return None
+
+    f = file(filename, 'r')
+    content = f.read()
+    f.close()
+    return content
+
+
+# 读取文件解析成json对象
+def getJsonFile(filename):
+    content = getFileContent(filename)
+    if content == None:
+        content = '{}'
+
+    jsonObj = json.loads(content)
+    return jsonObj
+
+
+# 写入文本文件
+def writeFileContent(filename, content):
+    f = file(filename, 'w')
+    ret = f.write(content)
+    f.flush()
+    f.close()
+    # print '写入文件:', filename, len(content), ret
+
+
+# 读取文本文件
+def insertTextContent(content, index, val):
+    newContent = content[0:index]
+    newContent += val
+    newContent += content[index:]
+    return newContent
+
+
+# 压缩文件夹
+def zipFolder(startdir, file_news):
+    z = zipfile.ZipFile(file_news, 'w', zipfile.ZIP_DEFLATED)  # 参数一：文件夹名
+    print(os.walk(startdir))
+    for dirpath, dirnames, filenames in os.walk(startdir):
+        fpath = dirpath.replace(startdir, '')
+        fpath = fpath and fpath + os.sep or ''  # 实现当前文件夹以及包含的所有文件的压缩
+        for filename in filenames:
+            z.write(os.path.join(dirpath, filename), fpath + filename)
+    print '压缩成功', file_news
+    z.close()
+
+
+# 删除文件
+def delFile(path):
+    ls = os.listdir(path)
+    for i in ls:
+        c_path = os.path.join(path, i)
+        if os.path.isdir(c_path):
+            delFile(c_path)
+        else:
+            os.remove(c_path)
+            # print '删除文件成功:' + c_path
+
+
+##################################################################################################################
+############################################## 重命名 ####################################################################
+##################################################################################################################
 
 class Rename:
     def __init__(self):
@@ -44,6 +202,7 @@ class Rename:
             elif pName == '-b':
                 self.params.ignore.append(pValue)
 
+
     def check(self):
         return self.params.check()
 
@@ -57,40 +216,6 @@ class Rename:
             for dir in dirs:
                 self.fileMgr.fileList(dir)
             return
-
-        self.appendLog(u'使用OC实现重命名, 已放弃支持')
-        # 以下是 调用 oc 语言实现
-        # ps = '--path'
-        # for dir in self.params.files:
-        #     dir = dir.replace(" ", "\ ")
-        #     ps = "%s %s" % (ps, dir)
-        #
-        # ps = "%s --old" % ps
-        # for item in self.params.oldNames:
-        #     item = item.replace(" ", "\ ")
-        #     ps = "%s %s" % (ps, item)
-        #
-        # ps = "%s --replace" % ps
-        # for item in self.params.newNames:
-        #     item = item.replace(" ", "\ ")
-        #     ps = "%s %s" % (ps, item)
-        #
-        # ps = "%s --file-ignore" % ps
-        # for item in self.params.ignore:
-        #     item = item.replace(" ", "\ ")
-        #     ps = "%s %s" % (ps, item)
-        #
-        # ps = "%s --dir-ignore" % ps
-        # for item in self.params.ignore:
-        #     item = item.replace(" ", "\ ")
-        #     ps = "%s %s" % (ps, item)
-        #
-        # cPath = sys.argv[0]
-        # cmd = u'%s/xcrename %s' % (os.path.dirname(cPath), ps)
-        # cmdThread = CMDThread(cmd, self)
-        # cmdThread.sub = False
-        # cmdThread.start()
-        # self.cmdThread = cmdThread
 
     def ignore(self, filePath, fileName, isDir):
         self.appendLog(u'跳过:%s' % filePath)
@@ -118,7 +243,7 @@ class Rename:
 
             # filePathMode = oct(os.stat(filePath).st_mode)
             # print '权限1:',  filePathMode
-            if FileListUtil.GetFileMd5(tmpFile) != FileListUtil.GetFileMd5(filePath):
+            if GetFileMd5(tmpFile) != GetFileMd5(filePath):
                 shutil.move(tmpFile, filePath)
             else:
                 os.remove(tmpFile)

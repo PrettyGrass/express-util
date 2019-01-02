@@ -76,6 +76,7 @@
 
       renameAction() {
 
+        this.desc = ''
         var action = `action${Date.now()}`
         ipcRenderer.on(action, (e, data) => {
             if (data.code == 0) {

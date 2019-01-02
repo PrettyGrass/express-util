@@ -78,7 +78,9 @@
 
         var action = `action${Date.now()}`
         ipcRenderer.on(action, (e, data) => {
-            this.desc = data.data
+            if (data.code == 0) {
+              this.desc = data.data
+            }
         })
 
         ipcRenderer.send('app.cmd.exec.async', {

@@ -43,6 +43,11 @@ const CMD = {
         var scriptPath = path.join(global.__root, `assets/${arg.scriptName}`)
         temParams.unshift(scriptPath)
       }
+      // 指定外部脚本路径
+      if (arg.scriptPath != '') {
+         temParams.unshift(arg.scriptPath)
+      }
+
       console.log("######脚本参数:",temParams)
       let params = temParams || []
       var shellSpawn = spawn(shell, params)

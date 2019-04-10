@@ -142,6 +142,9 @@ end
           case 'close':
             type = currentConfig.closeSourceDir
             break
+          case 'openmirror':
+            type = currentConfig.openSourceMirrorDir
+            break
         }
         this.zipUploading = true
         if (currentConfig.fileCloud === 'qiniu') {
@@ -220,6 +223,9 @@ end
             break
           case 'close':
             type = currentConfig.closeSourceDir
+            break
+          case 'openmirror':
+            type = currentConfig.openSourceMirrorDir
             break
         }
         this.podspecUploading = true

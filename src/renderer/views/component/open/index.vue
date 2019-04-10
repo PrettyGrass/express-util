@@ -132,6 +132,9 @@
           case 'close':
             this.libDir = current.closeSourceDir
             break
+          case 'openmirror':
+            this.libDir = current.openSourceMirrorDir
+            break
         }
         this.listLoading = true
 

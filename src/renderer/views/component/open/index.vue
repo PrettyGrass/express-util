@@ -11,6 +11,7 @@
       </el-header>
 
       <el-main>
+        <label style="margin: 4px;">{{conf.qiniuBucketDomain}}/{{libDir}}{{selectedPod}}</label>
         <el-table :data="listShow" v-loading.body="listLoading" element-loading-text="Loading" border fit
                   highlight-current-row>
           <el-table-column align="center" label='序号' width="60">
@@ -58,7 +59,9 @@
         sid: '',
         searchText: '',
         type: '',
-        libDir: ''
+        libDir: '',
+        selectedPod: '',
+        conf: {}
       }
     },
     watch: {
@@ -137,6 +140,7 @@
             break
         }
         this.listLoading = true
+        this.conf = current
 
         ipcRenderer.send('app.qiniu.file.list', {
           sid: this.sid,
@@ -164,6 +168,7 @@
       selectedPodVer(name, ver) {
         let pod = `pod '${name}',  :podspec => ${this.libDir.replace('/', '')} + '${name}/${ver}.podspec'`
         clipboard.writeText(pod.replace(/\-/g, '_'))
+        this.selectedPod = `${name}/${ver}.podspec`
         this.$message.success('依赖项已复制到剪切板!')
       },
       markDownAction() {

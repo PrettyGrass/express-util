@@ -171,6 +171,12 @@ export const constantRouterMap = [
         meta: {title: '开源组件(SFW)', icon: 'opensource'}
       },
       {
+        path: 'openmirror',
+        name: '开源组件(镜像)',
+        component: () => import('@/views/component/open/index'),
+        meta: {title: '开源组件(镜像)', icon: 'opensource'}
+      },
+      {
         path: 'close',
         name: '闭源组件',
         component: () => import('@/views/component/open/index'),

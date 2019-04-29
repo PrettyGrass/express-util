@@ -47,6 +47,9 @@
       <el-form-item label="开源组件静态FW目录">
         <el-input type="text" v-model="currentConf.openSourceSFWDir"></el-input>
       </el-form-item>
+      <el-form-item label="开源组件源码镜像目录">
+        <el-input type="text" v-model="currentConf.openSourceMirrorDir"></el-input>
+      </el-form-item>
       <el-form-item label="闭源组件目录">
         <el-input type="text" v-model="currentConf.closeSourceDir"></el-input>
       </el-form-item>

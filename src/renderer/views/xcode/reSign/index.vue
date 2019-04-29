@@ -20,7 +20,7 @@
         </el-col>
       </el-form-item>
 
-      <el-form-item label="moblieProvision路径">
+      <el-form-item label="moblieprovision路径">
         <el-col :span="14" style="text-align: center">
           <el-input type="text" placeholder="描述文件全路径" v-model="moblieProvisionPath"></el-input>
         </el-col>

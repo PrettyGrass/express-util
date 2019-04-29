@@ -109,6 +109,13 @@ export const constantRouterMap = [
         meta: {title: '项目重命名', icon: 'rename'}
       },
       {
+
+        path: 'searchUnImport',
+        name: '查找未使用的类',
+        component: () => import('@/views/xcode/searchUnImport/index'),
+        meta: {title: '查找未使用的类', icon: 'library'}
+      },
+      {
         path: 'icon',
         name: '替换icon',
         component: () => import('@/views/xcode/icon/index'),

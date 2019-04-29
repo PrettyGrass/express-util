@@ -39,6 +39,7 @@ const CMD = {
       // 正式执行命令
       let shell = arg.shell
       var temParams = arg.params
+
       if (arg.fromAssets == true && arg.scriptName !== '') {
         var scriptPath = path.join(global.__root, `assets/${arg.scriptName}`)
         temParams.unshift(scriptPath)

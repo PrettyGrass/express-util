@@ -145,6 +145,12 @@ export const constantRouterMap = [
         name: '组件编译',
         component: () => import('@/views/xcode/pods/index'),
         meta: {title: '组件编译', icon: 'template'}
+      },
+      {
+        path: 'reSign',
+        name: 'ipa重签',
+        component: () => import('@/views/xcode/reSign/index'),
+        meta: {title: '重签工具', icon: 'library'}
       }
     ]
   },

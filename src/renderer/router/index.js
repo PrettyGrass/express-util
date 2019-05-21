@@ -188,6 +188,12 @@ export const constantRouterMap = [
         component: () => import('@/views/component/open/index'),
         meta: {title: '闭源组件', icon: 'closesource'}
       },
+      {
+        path: 'help',
+        name: '帮助',
+        component: () => import('@/views/component/help/index'),
+        meta: {title: '帮助', icon: 'closesource'}
+      },
       // {
       //   path: 'inner',
       //   name: '自研组件',

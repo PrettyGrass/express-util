@@ -1,3 +1,5 @@
+import { type } from 'os';
+
 // 在主进程中.
 const {ipcMain, app} = require('electron')
 const path = require('path')
@@ -37,18 +39,22 @@ const CMD = {
       // var gitPath = path.join(global.__root, 'assets/gitSource.sh')
       // console.log('---', gitPath)
       // 正式执行命令
+  
       let shell = arg.shell
       var temParams = arg.params
 
+      // Assets下的脚本
       if (arg.fromAssets == true && arg.scriptName !== '') {
         var scriptPath = path.join(global.__root, `assets/${arg.scriptName}`)
+        console.log("scriptPath1:",scriptPath)
         temParams.unshift(scriptPath)
+      }else {
+          // 指定外部脚本路径
+          var scriptFullPath = arg.scriptPath
+          if (scriptFullPath != "" && typeof scriptFullPath != "undefined" && scriptFullPath != nil ) {
+             temParams.unshift(arg.scriptPath)
+          }
       }
-      // 指定外部脚本路径
-      if (arg.scriptPath != '') {
-         temParams.unshift(arg.scriptPath)
-      }
-
       console.log("######脚本参数:",temParams)
       let params = temParams || []
       var shellSpawn = spawn(shell, params)

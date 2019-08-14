@@ -47,7 +47,7 @@
 
 <script>
   import {clipboard, ipcRenderer, remote} from 'electron'
-
+  const currentConfig = ipcRenderer.sendSync('app.user.config.current', {sync: true})
   const path = require('path')
 
   export default {
@@ -85,7 +85,13 @@
       }
     },
     created() {
-      ipcRenderer.on('app.qiniu.file.update', (event, arg) => {
+      var notice = ''
+      if (currentConfig.fileCloud === 'qiniu') {
+        notice = 'app.qiniu.file.update'
+      } else {
+        notice = 'app.alioss.file.update'
+      }
+      ipcRenderer.on(notice, (event, arg) => {
         this.listLoading = false
         this.parseList(arg)
       })
@@ -142,10 +148,16 @@
         this.listLoading = true
         this.conf = current
 
-        ipcRenderer.send('app.qiniu.file.list', {
+        var notice = ''
+        if (currentConfig.fileCloud === 'qiniu') {
+          notice = 'app.qiniu.file.list'
+        } else {
+          notice = 'app.alioss.file.list'
+        }
+        ipcRenderer.send(notice, {
           sid: this.sid,
           dir: this.libDir,
-          size: 500
+          size: 1000
         })
       },
       searchAction() {

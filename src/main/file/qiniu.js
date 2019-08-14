@@ -21,11 +21,7 @@ const File = {
 
     var bucket = curt.qiniuBucket;
     var bucketDomain = curt.qiniuBucketDomain;
-    // @param options 列举操作的可选参数
-    //                prefix    列举的文件前缀
-    //                marker    上一次列举返回的位置标记，作为本次列举的起点信息
-    //                limit     每次返回的最大列举文件数量
-    //                delimiter 指定目录分隔符
+
     var options = {
       limit: params.size,
       prefix: params.dir,
@@ -58,13 +54,6 @@ const File = {
           file.type = item.type
           file.mimeType = item.mimeType
           file.name = item.key.split('/').pop()
-          //console.log(item.key);
-          // console.log(item.putTime);
-          // console.log(item.hash);
-          // console.log(item.fsize);
-          // console.log(item.mimeType);
-          // console.log(item.endUser);
-          // console.log(item.type);
         });
       } else {
         console.log('respBody', respBody, respInfo);

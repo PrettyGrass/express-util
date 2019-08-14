@@ -54,6 +54,7 @@
     }
   },
   "dependencies": {
+    "ali-oss": "^6.1.1",
     "axios": "0.17.1",
     "codemirror": "^5.41.0",
     "element-ui": "2.3.4",

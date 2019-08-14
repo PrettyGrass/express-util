@@ -1,50 +1,50 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="160px">
+    <el-form :model="form" label-width="160px" ref="form">
       <el-form-item label="组件名">
         <el-col :span="10">
-          <el-input :disabled="disablePodName" v-model="form.podName" placeholder="请输入组件名" clearable></el-input>
+          <el-input :disabled="disablePodName" clearable placeholder="请输入组件名" v-model="form.podName"></el-input>
         </el-col>
-        <el-col class="line" :span="4">版本号</el-col>
+        <el-col :span="4" class="line">版本号</el-col>
         <el-col :span="10">
-          <el-input v-model="form.podVer" placeholder="请输入版本号" clearable></el-input>
+          <el-input clearable placeholder="请输入版本号" v-model="form.podVer"></el-input>
         </el-col>
       </el-form-item>
 
       <el-form-item label="组件资源包">
         <el-upload
-                class="upload-demo"
-                ref="podZipFile"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-change="handleZipChange"
-                :show-file-list="false"
                 :auto-upload="false"
                 :disabled="form.podVer.length === 0 || form.podName.length === 0"
+                :on-change="handleZipChange"
+                :show-file-list="false"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                class="upload-demo"
+                ref="podZipFile"
         >
-          <el-button slot="trigger" size="small" :disabled="form.podVer.length === 0 || form.podName.length === 0">
+          <el-button :disabled="form.podVer.length === 0 || form.podName.length === 0" size="small" slot="trigger">
             {{this.podZipFile ? '更换资源:' + this.podZipFile.name:
             '选择组件资源zip包'}}
           </el-button>
-          <el-button v-if="this.podZipFile" style="margin-left: 10px;"
+          <el-button :disabled="form.podVer.length === 0 || form.podName.length === 0" @click="zipUpload"
                      size="small"
-                     @click="zipUpload" :disabled="form.podVer.length === 0 || form.podName.length === 0"
+                     style="margin-left: 10px;" v-if="this.podZipFile"
                      v-loading="zipUploading">上传
           </el-button>
-          <div slot="tip" class="el-upload__tip">{{podZipFileUrl}}</div>
+          <div class="el-upload__tip" slot="tip">{{podZipFileUrl}}</div>
         </el-upload>
       </el-form-item>
 
       <el-form-item label="podspec文件">
         <el-upload
-                class="upload-demo"
-                ref="podspecFile"
-                action="https://jsonplaceholder.typicode.com/posts/"
-                :on-change="handlePodspecChange"
-                :show-file-list="false"
                 :auto-upload="false"
                 :disabled="form.podVer.length === 0 || form.podName.length === 0"
+                :on-change="handlePodspecChange"
+                :show-file-list="false"
+                action="https://jsonplaceholder.typicode.com/posts/"
+                class="upload-demo"
+                ref="podspecFile"
         >
-          <el-button slot="trigger" size="small" :disabled="form.podVer.length === 0 || form.podName.length === 0">
+          <el-button :disabled="form.podVer.length === 0 || form.podName.length === 0" size="small" slot="trigger">
             {{this.podspecFile ? '依赖文件:' + this.podspecFile.name:
             '选择podspec文件'}}
           </el-button>
@@ -56,16 +56,16 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button :disabled="!form.podContent || !podZipFile || !form.podVer || !form.podName" type="primary"
-                   @click="podspecUpload"
+        <el-button :disabled="!form.podContent || !podZipFile || !form.podVer || !form.podName" @click="podspecUpload"
+                   type="primary"
                    v-loading="podspecUploading"
         >确认上传 {{form.podName}}: {{form.podVer}}
         </el-button>
         <!--<el-button @click="onCancel">Cancel</el-button>-->
       </el-form-item>
       <el-form-item label="修改podspec内容">
-        <el-input type="textarea" rows="20" v-model="form.podContent"
-                  :disabled="form.podVer.length === 0 || form.podName.length === 0"></el-input>
+        <el-input :disabled="form.podVer.length === 0 || form.podName.length === 0" rows="20" type="textarea"
+                  v-model="form.podContent"></el-input>
       </el-form-item>
     </el-form>
   </div>
@@ -73,8 +73,9 @@
 
 <script>
   import {ipcRenderer} from 'electron'
-  // import * as qiniu from 'qiniu-js'
+
   var qiniu = require('qiniu')
+  let OSS = require('ali-oss')
   var fs = require('fs')
   const currentConfig = ipcRenderer.sendSync('app.user.config.current', {sync: true})
 
@@ -147,9 +148,11 @@ end
             break
         }
         this.zipUploading = true
+
+        let key = `${type}/${this.form.podName}/${this.form.podVer}/${this.form.podName}-${this.form.podVer}-libs.zip`
+        key = key.replace('//', '/')
         if (currentConfig.fileCloud === 'qiniu') {
-          let key = `${type}/${this.form.podName}/${this.form.podVer}/${this.form.podName}-${this.form.podVer}-libs.zip`
-          key = key.replace('//', '/')
+
           var bucketDomain = currentConfig.qiniuBucketDomain
           this.uploadQiniu(this.podZipFile, key, null, (respErr, respBody, respInfo) => {
             this.zipUploading = false
@@ -169,7 +172,42 @@ end
             }
           })
         } else {
-          return this.$message.warning('暂未支持的云盘')
+          this.uploadAlioss(this.podZipFile, key, null, (respErr, respBody, respInfo) => {
+            this.zipUploading = false
+            if (respErr) {
+              this.$message.warning('上传失败,' + respErr)
+            } else {
+              this.zipUploadSuccess()
+            }
+          })
+          //return this.$message.warning('暂未支持的云盘')
+        }
+      },
+      async uploadAlioss(file, key, mimeType = null, callback) {
+
+        let client = new OSS({
+          region: currentConfig.aliossRegion,
+          accessKeyId: currentConfig.aliossAccessKey,
+          accessKeySecret: currentConfig.aliossSecretKey,
+          bucket: currentConfig.aliossBucket
+        })
+
+        try {
+          console.log(file, key);
+          if (file && file.raw && file.raw.path) {
+            file = file.raw.path
+          }
+          let meta = {}
+          if (mimeType !== null) {
+            meta.mime = mimeType
+          }
+          // 文件上传
+          let result = await client.put(key, file, meta)
+          console.log('oss:', result, 'meta:', meta);
+          callback && callback(null, result, result.res)
+        } catch (e) {
+          console.log(e);
+          callback && callback(e)
         }
       },
       uploadQiniu(file, key, mimeType = null, callback) {
@@ -229,11 +267,12 @@ end
             break
         }
         this.podspecUploading = true
+        let key = `${type}/${this.form.podName}/${this.form.podVer}.podspec`
+        key = key.replace('//', '/')
+        let blob = Buffer(this.form.podContent);
         if (currentConfig.fileCloud === 'qiniu') {
-          let key = `${type}/${this.form.podName}/${this.form.podVer}.podspec`
-          key = key.replace('//', '/')
           var bucketDomain = currentConfig.qiniuBucketDomain
-          var blob = Buffer(this.form.podContent);
+
           this.uploadQiniu(blob, key, 'text/plain; charset=utf-8', (respErr, respBody, respInfo) => {
             this.podspecUploading = false
             if (respErr) {
@@ -253,7 +292,15 @@ end
             }
           })
         } else {
-          return this.$message.warning('暂未支持的云盘')
+          this.uploadAlioss(blob, key, 'text/plain; charset=utf-8', (respErr, respBody, respInfo) => {
+            if (respErr) {
+              this.$message.warning('上传失败,' + respErr)
+            } else {
+              this.$message.warning('上传成功')
+              this.$router.go(-1)
+            }
+          })
+          //return this.$message.warning('暂未支持的云盘')
         }
       },
       handleZipChange(file) {

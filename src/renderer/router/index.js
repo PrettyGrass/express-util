@@ -22,6 +22,58 @@ Vue.use(Router)
     icon: 'svg-name'             the icon show in the sidebar,
   }
  **/
+
+var testRouter = {
+  path: '/test',
+  component: Layout,
+  redirect: '/test/table',
+  name: '测试功能区',
+  meta: {title: '测试功能区', icon: 'test'},
+  children: [
+    {
+      path: 'table',
+      name: 'Table',
+      component: () => import('@/views/table/index'),
+      meta: {title: 'Table', icon: 'table'}
+    },
+    {
+      path: 'tree',
+      name: 'Tree',
+      component: () => import('@/views/tree/index'),
+      meta: {title: 'Tree', icon: 'tree'}
+    },
+    {
+      path: 'test',
+      name: '测试',
+      component: () => import('@/views/test/index'),
+      meta: {title: '测试', icon: 'form'}
+    },
+    {
+      path: 'index',
+      name: '表单',
+      component: () => import('@/views/form/index'),
+      meta: {title: '表单', icon: 'form'}
+    },
+    {
+      path: 'excel',
+      name: '文案转换',
+      component: () => import('@/views/test/excel/index'),
+      meta: {title: '文案转换', icon: 'form'}
+    },
+    {
+      path: 'monacoeditor',
+      name: '代码编辑器',
+      component: () => import('@/views/test/code-edit/index'),
+      meta: {title: '代码编辑器', icon: 'form'}
+    }
+  ]
+}
+
+let router404 = {path: '*', redirect: '/404', hidden: true}
+if (!process.env.__IS_DEV) {
+  testRouter = router404
+}
+
 export const constantRouterMap = [
   // { path: '/login', component: () => import('@/views/login/index'), hidden: true },
   {path: '/404', component: () => import('@/views/404'), hidden: true},
@@ -101,7 +153,7 @@ export const constantRouterMap = [
         name: '新建UI',
         component: () => import('@/views/xcode/UI/index'),
         meta: {title: '新建UI', icon: 'library'}
-      },{
+      }, {
 
         path: 'rename',
         name: '项目重命名',
@@ -224,52 +276,8 @@ export const constantRouterMap = [
       }
     ]
   },
-  {
-    path: '/test',
-    component: Layout,
-    redirect: '/test/table',
-    name: '测试功能区',
-    meta: {title: '测试功能区', icon: 'test'},
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: {title: 'Table', icon: 'table'}
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: {title: 'Tree', icon: 'tree'}
-      },
-      {
-        path: 'test',
-        name: '测试',
-        component: () => import('@/views/test/index'),
-        meta: {title: '测试', icon: 'form'}
-      },
-      {
-        path: 'index',
-        name: '表单',
-        component: () => import('@/views/form/index'),
-        meta: {title: '表单', icon: 'form'}
-      },
-      {
-        path: 'excel',
-        name: '文案转换',
-        component: () => import('@/views/test/excel/index'),
-        meta: {title: '文案转换', icon: 'form'}
-      },
-      {
-        path: 'monacoeditor',
-        name: '代码编辑器',
-        component: () => import('@/views/test/code-edit/index'),
-        meta: {title: '代码编辑器', icon: 'form'}
-      }
-    ]
-  },
-  {path: '*', redirect: '/404', hidden: true}
+  testRouter,
+  router404
 ]
 
 export default new Router({

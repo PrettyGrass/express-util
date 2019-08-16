@@ -27,7 +27,6 @@
           return resolve([{name: 'region'}]);
         }
         if (node.level > 1) return resolve([]);
-        console.log('node', node)
         setTimeout(() => {
           const data = [{
             name: 'leaf',

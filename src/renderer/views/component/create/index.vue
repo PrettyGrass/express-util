@@ -6,9 +6,15 @@
           <el-input :disabled="disablePodName" clearable placeholder="请输入组件名" v-model="form.podName"></el-input>
         </el-col>
         <el-col :span="4" class="line">版本号</el-col>
-        <el-col :span="10">
+        <el-col :span="8">
           <el-input clearable placeholder="请输入版本号" v-model="form.podVer"></el-input>
         </el-col>
+        <el-col :span="2">
+          <el-button @click="helperVisible = true" size="text">
+            帮助
+          </el-button>
+        </el-col>
+
       </el-form-item>
 
       <el-form-item label="组件资源包">
@@ -68,6 +74,17 @@
                   v-model="form.podContent"></el-input>
       </el-form-item>
     </el-form>
+    <el-dialog
+            :visible.sync="helperVisible"
+            title="上传步骤"
+            width="30%">
+      <div>上传的压缩包压缩根路径</div>
+      <span>这是一段信息</span>
+      <span class="dialog-footer" slot="footer">
+<!--    <el-button @click="helperVisible = false">取 消</el-button>-->
+    <el-button @click="helperVisible = false" type="primary">确 定</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -82,6 +99,7 @@
   export default {
     data() {
       return {
+        helperVisible: false,
         disablePodName: false,
         fileList: [],
         podZipFile: null,
@@ -146,14 +164,17 @@ end
           case 'openmirror':
             type = currentConfig.openSourceMirrorDir
             break
+          case 'inner':
+            type = currentConfig.innerSourceDir
+            break
         }
         this.zipUploading = true
 
         let key = `${type}/${this.form.podName}/${this.form.podVer}/${this.form.podName}-${this.form.podVer}-libs.zip`
         key = key.replace('//', '/')
+        var bucketDomain = currentConfig.qiniuBucketDomain
         if (currentConfig.fileCloud === 'qiniu') {
 
-          var bucketDomain = currentConfig.qiniuBucketDomain
           this.uploadQiniu(this.podZipFile, key, null, (respErr, respBody, respInfo) => {
             this.zipUploading = false
             if (respErr) {
@@ -174,6 +195,7 @@ end
         } else {
           this.uploadAlioss(this.podZipFile, key, null, (respErr, respBody, respInfo) => {
             this.zipUploading = false
+            this.podZipFileUrl = `${bucketDomain}/${key}`
             if (respErr) {
               this.$message.warning('上传失败,' + respErr)
             } else {
@@ -264,6 +286,9 @@ end
             break
           case 'openmirror':
             type = currentConfig.openSourceMirrorDir
+            break
+          case 'inner':
+            type = currentConfig.innerSourceDir
             break
         }
         this.podspecUploading = true

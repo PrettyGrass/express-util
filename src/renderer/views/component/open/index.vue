@@ -144,6 +144,9 @@
           case 'openmirror':
             this.libDir = current.openSourceMirrorDir
             break
+          case 'inner':
+            this.libDir = current.innerSourceDir
+            break
         }
         this.listLoading = true
         this.conf = current

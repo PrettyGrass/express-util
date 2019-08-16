@@ -241,6 +241,12 @@ export const constantRouterMap = [
         meta: {title: '闭源组件', icon: 'closesource'}
       },
       {
+        path: 'inner',
+        name: '内部组件',
+        component: () => import('@/views/component/open/index'),
+        meta: {title: '内部组件', icon: 'closesource'}
+      },
+      {
         path: 'help',
         name: '帮助',
         component: () => import('@/views/component/help/index'),

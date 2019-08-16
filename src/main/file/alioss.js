@@ -29,7 +29,6 @@ const OSSFile = {
     });
 
     // 不带任何参数，默认最多返回1000个文件。
-
     var objects = []
     var isTruncated = true
     var nextMarker = null
@@ -47,7 +46,6 @@ const OSSFile = {
         break
       }
     }
-
     var result = {
       sid: nextMarker,
       items: [],
@@ -56,6 +54,9 @@ const OSSFile = {
     var items = result.items
     objects.forEach(function (item) {
 
+      if (!item || !item.name) {
+        return
+      }
       //var url = bucketManager.publicDownloadUrl(bucketDomain, item.key)
       let file = {}
       items.push(file)

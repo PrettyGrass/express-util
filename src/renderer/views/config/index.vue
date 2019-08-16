@@ -53,6 +53,9 @@
       <el-form-item label="闭源组件目录">
         <el-input type="text" v-model="currentConf.closeSourceDir"></el-input>
       </el-form-item>
+      <el-form-item label="内部组件目录">
+        <el-input type="text" v-model="currentConf.innerSourceDir"></el-input>
+      </el-form-item>
 
       <el-form-item label="域名">
         <el-input type="text" v-model="currentConf.qiniuBucketDomain"></el-input>

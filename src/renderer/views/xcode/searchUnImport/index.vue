@@ -67,12 +67,13 @@
         })
         ipcRenderer.send('app.cmd.exec.async', {
           shell: 'python',
-          params: [this.originPath ,this.newPath],
+          params: [this.originPath],
           action: action,
           fromAssets: true,
-          scriptName: "replaceAppIcon.py"
+          scriptName: "funcNameCheck.py"
         })
       },
+
     }
   }
 </script>

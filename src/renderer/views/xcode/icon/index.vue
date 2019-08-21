@@ -99,7 +99,7 @@
           params: [this.originPath ,this.newPath],
           action: action,
           fromAssets: true,
-          scriptName: "replaceAppIcon.py"
+          scriptName: "export.py"
         })
       },
     }
